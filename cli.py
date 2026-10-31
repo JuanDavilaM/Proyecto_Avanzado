@@ -17,7 +17,21 @@ def mostrar_menu_inicio():
 
     return valid_options, last_menu
 
+def mostrar_menu_parametros_ejecucion():
+
+    valid_options = [1]
+    last_menu = "ajustar parámetros de ejecución"
+
+    try:
+        numero_anular = int(input("Introduce el número de núcleos que quieres anular: "))
+    except:
+        print("Número erroneo")
+        numero_anular = mostrar_menu_parametros_ejecucion()
+
+    return numero_anular
+
 def user_request(valid_options, last_menu):
+
     try: 
         comando = int(input("Introduce un comando válido: "))
 
@@ -25,7 +39,10 @@ def user_request(valid_options, last_menu):
             print("Comando no válido, introduzca comando válido")
             return return_last_menu(last_menu)
         elif comando in valid_options:
-            return comando
+            if comando == 2 and last_menu == "inicio":
+                return mostrar_menu_parametros_ejecucion()
+            else:
+                comando
     except:
         print("ERROR, volviendo al último menú...")
         return return_last_menu(last_menu)
