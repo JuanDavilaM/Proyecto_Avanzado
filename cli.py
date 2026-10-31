@@ -18,16 +18,20 @@ def mostrar_menu_inicio():
     return valid_options, last_menu
 
 def user_request(valid_options, last_menu):
-    
-    comando = int(input("Introduce un comando válido: "))
+    try: 
+        comando = int(input("Introduce un comando válido: "))
 
-    if comando not in valid_options:
-        print("Comando no válido, introduzca comando válido")
+        if comando not in valid_options:
+            print("Comando no válido, introduzca comando válido")
+            return return_last_menu(last_menu)
+        elif comando in valid_options:
+            return comando
+    except:
+        print("ERROR, volviendo al último menú...")
         return return_last_menu(last_menu)
-    elif comando in valid_options:
-        return comando
         
 def return_last_menu(last_menu):
+
     if last_menu == "inicio":
         valid_options, last_menu = mostrar_menu_inicio()
         user_request(valid_options, last_menu)
