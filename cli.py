@@ -58,12 +58,18 @@ def user_request(valid_options, last_menu):
 
         if comando not in valid_options:
             print("Comando no válido, introduzca comando válido")
-            return return_last_menu(last_menu)
+            return_last_menu(last_menu)
+            return True
         elif comando in valid_options:
             if comando == 1 and last_menu == "inicio":
-                return mostrar_menu_cargar_json()
+                mostrar_menu_cargar_json()
+                return True
             elif comando == 2 and last_menu == "inicio":
-                return mostrar_menu_parametros_ejecucion()
+                mostrar_menu_parametros_ejecucion()
+                return True
+            elif comando == 6 and last_menu == "inicio":
+                print("Programa Finalizado")
+                return False
             else:
                 return comando
     except:
@@ -80,5 +86,8 @@ def return_last_menu(last_menu):
 
 if __name__ == "__main__":
 
-    valid_options, last_menu = mostrar_menu_inicio()
-    salida_user_request = user_request(valid_options, last_menu)
+    evaluator = True
+
+    while evaluator == True:
+        valid_options, last_menu = mostrar_menu_inicio()
+        evaluator = user_request(valid_options, last_menu)
