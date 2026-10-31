@@ -1,3 +1,7 @@
+import os
+
+### MENÚS ###
+
 def mostrar_menu_inicio():
 
     valid_options = [1,2,3,4,5,6]
@@ -19,8 +23,7 @@ def mostrar_menu_inicio():
 
 def mostrar_menu_parametros_ejecucion():
 
-    valid_options = [1]
-    last_menu = "ajustar parámetros de ejecución"
+    last_menu = "ajustar parámetros de ejecución" #Por si luego es necesario
 
     try:
         numero_anular = int(input("Introduce el número de núcleos que quieres anular: "))
@@ -29,6 +32,17 @@ def mostrar_menu_parametros_ejecucion():
         numero_anular = mostrar_menu_parametros_ejecucion()
 
     return numero_anular
+
+def mostrar_menu_cargar_json():
+
+    last_menu = "mostrar menú json" #Por si luego es necesario
+
+    try:
+        ruta = os.path(input("Introduce una ruta válida del equipo de donde extraer el .json: "))
+    except:
+        print("Ruta inválida")
+
+    return ruta
 
 def user_request(valid_options, last_menu):
 
@@ -39,10 +53,12 @@ def user_request(valid_options, last_menu):
             print("Comando no válido, introduzca comando válido")
             return return_last_menu(last_menu)
         elif comando in valid_options:
-            if comando == 2 and last_menu == "inicio":
+            if comando == 1 and last_menu == "inicio":
+                return mostrar_menu_cargar_json()
+            elif comando == 2 and last_menu == "inicio":
                 return mostrar_menu_parametros_ejecucion()
             else:
-                comando
+                return comando
     except:
         print("ERROR, volviendo al último menú...")
         return return_last_menu(last_menu)
