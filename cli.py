@@ -1,3 +1,5 @@
+from io_json import read_json
+
 import os
 
 ### MENÚS ###
@@ -38,11 +40,12 @@ def mostrar_menu_cargar_json():
     last_menu = "mostrar menú json" #Por si luego es necesario
 
     try:
-        ruta = os.path(input("Introduce una ruta válida del equipo de donde extraer el .json: "))
+        ruta = input("Introduce una ruta válida del equipo de donde extraer el .json: ")
+        data = read_json(ruta)
     except:
         print("Ruta inválida")
 
-    return ruta
+    return data
 
 def user_request(valid_options, last_menu):
 
@@ -71,6 +74,7 @@ def return_last_menu(last_menu):
 
         return None
 
-valid_options, last_menu = mostrar_menu_inicio()
-salida_user_request = user_request(valid_options, last_menu)
+if __name__ == "__main__":
 
+    valid_options, last_menu = mostrar_menu_inicio()
+    salida_user_request = user_request(valid_options, last_menu)

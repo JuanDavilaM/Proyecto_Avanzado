@@ -1,7 +1,5 @@
 import json
 
-from cli import mostrar_menu_cargar_json
-
 # Opening JSON file
 
 def read_json(ruta):
@@ -10,4 +8,3 @@ def read_json(ruta):
         data = json.load(json_file)
 
     return data
-
