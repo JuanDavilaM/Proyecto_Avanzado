@@ -1,4 +1,4 @@
-from io_json import read_json
+from io_json import read_json, separar_problemas, individualizar_problemas
 
 import os
 
@@ -42,10 +42,14 @@ def mostrar_menu_cargar_json():
     try:
         ruta = input("Introduce una ruta válida del equipo de donde extraer el .json: ")
         data = read_json(ruta)
+        problemas_onemax, problemas_tsp = separar_problemas(data)
+        problemas_onemax = individualizar_problemas(problemas_onemax)
+        problemas_tsp = individualizar_problemas(problemas_tsp)
+        print("Problemas cargados con éxito")
     except:
-        print("Ruta inválida")
+        print("Ruta inválida, ¿Se te ha olvidado quitarle las 2 comillas a la ruta?")
 
-    return data
+    return problemas_tsp, problemas_onemax
 
 def user_request(valid_options, last_menu):
 
