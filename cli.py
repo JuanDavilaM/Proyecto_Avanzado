@@ -79,7 +79,8 @@ def user_request(valid_options, last_menu, cleaned_data):
                 print("Programa Finalizado")
                 return False, None
             else:
-                return None, None
+                print("Opción todavía no disponible")
+                return True, None
     except:
         print("ERROR, volviendo al último menú...")
         return True, None
