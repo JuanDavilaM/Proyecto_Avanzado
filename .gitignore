@@ -1,0 +1,10 @@
+# Archivos generados por Python
+__pycache__/
+*.pyc
+
+# Resultados y gráficos que genera el programa
+resultados*.json
+*.png
+
+# Archivos de problemas propios (datos), salvo los ejemplos del enunciado
+problemas/
