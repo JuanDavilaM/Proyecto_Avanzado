@@ -2,6 +2,8 @@
 
 from io_json import read_json, separar_problemas, individualizar_problemas, leer_metadatos_nucleos_y_salida
 
+from paralelo import request_hilos
+
 import os
 
 ### MENÚS ###
@@ -30,12 +32,12 @@ def mostrar_menu_parametros_ejecucion():
     last_menu = "ajustar parámetros de ejecución" #Por si luego es necesario
 
     try:
-        numero_anular = int(input("Introduce el número de núcleos que quieres anular: "))
+        numero_hilos_usar = request_hilos()
     except:
         print("Número erroneo")
-        numero_anular = mostrar_menu_parametros_ejecucion()
+        numero_hilos_usar = mostrar_menu_parametros_ejecucion()
 
-    return numero_anular
+    return numero_hilos_usar
 
 def mostrar_menu_cargar_json(cleaned_data):
 
@@ -71,6 +73,7 @@ def user_request(valid_options, last_menu, cleaned_data):
                 return True, data
             elif comando == 2 and last_menu == "inicio":
                 data = mostrar_menu_parametros_ejecucion()
+                cleaned_data["numero_nucleos_introducido"] = data
                 return True, data
             elif comando == 6 and last_menu == "inicio":
                 print("Programa Finalizado")
