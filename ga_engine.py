@@ -3,6 +3,7 @@ No conoce el problema: recibe como argumentos las funciones de generación,
 fitness, cruce y mutación, y los datos extra del problema mediante *args."""
 
 import random
+import time
 
 
 def generar_poblacion(tamano_poblacion, generador, tamano_individuo):
@@ -26,3 +27,17 @@ def seleccion_torneo(poblacion, fitnesses, tamano_torneo=2):
         ganador = max(participantes, key=lambda i: fitnesses[i])
         padres.append(poblacion[ganador])
     return padres
+
+def seleccionar_elites(poblacion, fitnesses, num_elites):
+    """Copias de los 'num_elites' mejores individuos, que pasan intactos
+    a la siguiente generación (elitismo)."""
+    orden = sorted(range(len(poblacion)), key=lambda i: fitnesses[i], reverse=True)
+    return [poblacion[i][:] for i in orden[:num_elites]]
+
+
+def optimo_alcanzado(fitness, fitness_objetivo, tolerancia=1e-4):
+    """True si la fitness alcanza el objetivo, con una pequeña tolerancia relativa.
+    Si no hay objetivo (None), nunca se considera alcanzado."""
+    if fitness_objetivo is None:
+        return False
+    return fitness >= fitness_objetivo - tolerancia * abs(fitness_objetivo)
