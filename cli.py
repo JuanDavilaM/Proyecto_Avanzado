@@ -85,11 +85,15 @@ def user_request(valid_options, last_menu, cleaned_data):
         print("ERROR, volviendo al último menú...")
         return True, None
 
-if __name__ == "__main__":
-
+def main():
+    """Bucle principal del programa: muestra el menú hasta que el usuario sale."""
     evaluator = True
     cleaned_data = {}
 
-    while evaluator == True:
+    while evaluator:
         valid_options, last_menu = mostrar_menu_inicio()
         evaluator, data = user_request(valid_options, last_menu, cleaned_data)
+
+
+if __name__ == "__main__":
+    main()
