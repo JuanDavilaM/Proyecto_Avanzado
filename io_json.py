@@ -47,6 +47,9 @@ def individualizar_problemas(problemas):
         resultado = resultado + combinaciones
     return resultado
 
-# problemas_onemax, problemas_tsp = separar_problemas(data)
-# problemas_onemax = individualizar_problemas(problemas_onemax)
-# problemas_tsp = individualizar_problemas(problemas_tsp)
+def leer_metadatos_nucleos_y_salida(data, cleaned_data):
+
+    cleaned_data["salida"] = data["salida"]
+    cleaned_data["num_nucleos"] = data["num_nucleos"]
+
+    return cleaned_data
