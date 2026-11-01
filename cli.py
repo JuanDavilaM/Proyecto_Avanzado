@@ -1,4 +1,6 @@
-from io_json import read_json, separar_problemas, individualizar_problemas
+#ruta pruebas ricardo: C:\Users\Ricardo\Downloads\problemas.json
+
+from io_json import read_json, separar_problemas, individualizar_problemas, leer_metadatos_nucleos_y_salida
 
 import os
 
@@ -35,7 +37,7 @@ def mostrar_menu_parametros_ejecucion():
 
     return numero_anular
 
-def mostrar_menu_cargar_json():
+def mostrar_menu_cargar_json(cleaned_data):
 
     last_menu = "mostrar menú json" #Por si luego es necesario
 
@@ -45,49 +47,45 @@ def mostrar_menu_cargar_json():
         problemas_onemax, problemas_tsp = separar_problemas(data)
         problemas_onemax = individualizar_problemas(problemas_onemax)
         problemas_tsp = individualizar_problemas(problemas_tsp)
+        data = leer_metadatos_nucleos_y_salida(data, cleaned_data)
+        data["problemas_onemax"] = problemas_onemax
+        data["problemas_tsp"] = problemas_tsp
         print("Problemas cargados con éxito")
+        print(data)
     except:
         print("Ruta inválida, ¿Se te ha olvidado quitarle las 2 comillas a la ruta?")
 
-    return problemas_tsp, problemas_onemax
+    return data
 
-def user_request(valid_options, last_menu):
+def user_request(valid_options, last_menu, cleaned_data):
 
     try: 
         comando = int(input("Introduce un comando válido: "))
 
         if comando not in valid_options:
             print("Comando no válido, introduzca comando válido")
-            return_last_menu(last_menu)
-            return True
+            return True, None
         elif comando in valid_options:
             if comando == 1 and last_menu == "inicio":
-                mostrar_menu_cargar_json()
-                return True
+                data = mostrar_menu_cargar_json(cleaned_data)
+                return True, data
             elif comando == 2 and last_menu == "inicio":
-                mostrar_menu_parametros_ejecucion()
-                return True
+                data = mostrar_menu_parametros_ejecucion()
+                return True, data
             elif comando == 6 and last_menu == "inicio":
                 print("Programa Finalizado")
-                return False
+                return False, None
             else:
-                return comando
+                return None, None
     except:
         print("ERROR, volviendo al último menú...")
-        return return_last_menu(last_menu)
-        
-def return_last_menu(last_menu):
-
-    if last_menu == "inicio":
-        valid_options, last_menu = mostrar_menu_inicio()
-        user_request(valid_options, last_menu)
-
-        return None
+        return True, None
 
 if __name__ == "__main__":
 
     evaluator = True
+    cleaned_data = {}
 
     while evaluator == True:
         valid_options, last_menu = mostrar_menu_inicio()
-        evaluator = user_request(valid_options, last_menu)
+        evaluator, data = user_request(valid_options, last_menu, cleaned_data)
