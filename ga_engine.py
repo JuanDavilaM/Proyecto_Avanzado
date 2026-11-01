@@ -14,3 +14,15 @@ def evaluar_poblacion(poblacion, fitness, *args):
     *args son los datos extra del problema (para TSP, la matriz de distancias)
     y se reenvían tal cual a la función de fitness."""
     return [fitness(individuo, *args) for individuo in poblacion]
+
+def seleccion_torneo(poblacion, fitnesses, tamano_torneo=2):
+    """Elige tantos padres como individuos tiene la población.
+    En cada torneo se escogen al azar 'tamano_torneo' individuos distintos
+    y gana el de mayor fitness."""
+    padres = []
+    k = min(tamano_torneo, len(poblacion))
+    for _ in range(len(poblacion)):
+        participantes = random.sample(range(len(poblacion)), k)
+        ganador = max(participantes, key=lambda i: fitnesses[i])
+        padres.append(poblacion[ganador])
+    return padres
