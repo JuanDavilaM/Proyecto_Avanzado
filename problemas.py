@@ -51,3 +51,45 @@ def fitness_onemax(individuo):
 def fitness_tsp(individuo, matriz):
     """Distancia con signo negativo: la ruta más corta tiene la fitness más alta."""
     return -longitud_ruta(individuo, matriz)
+
+# ---------- Cruces (devuelven dos hijos nuevos) ----------
+
+def cruce_un_punto(padre1, padre2):
+    """OneMax: se corta en un punto aleatorio y se intercambian las colas."""
+    n = len(padre1)
+    if n < 2:
+        return padre1[:], padre2[:]
+    corte = random.randint(1, n - 1)
+    return padre1[:corte] + padre2[corte:], padre2[:corte] + padre1[corte:]
+
+
+def cruce_ox(padre1, padre2):
+    """TSP: cruce por orden (Order Crossover). Cada hijo conserva un tramo
+    aleatorio de un padre y completa el resto con las ciudades que faltan,
+    en el orden en que aparecen en el otro padre. Siempre da rutas válidas."""
+    n = len(padre1)
+    a, b = sorted(random.sample(range(n + 1), 2))
+    return _hijo_ox(padre1, padre2, a, b), _hijo_ox(padre2, padre1, a, b)
+
+
+def _hijo_ox(fijo, relleno, a, b):
+    """Construye un hijo: el tramo [a, b) de 'fijo' en su sitio y el resto de 'relleno'."""
+    tramo = fijo[a:b]
+    usadas = set(tramo)
+    resto = [ciudad for ciudad in relleno if ciudad not in usadas]
+    return resto[:a] + tramo + resto[a:]
+
+# ---------- Mutaciones (devuelven un individuo nuevo, sin modificar el original) ----------
+
+def mutacion_bitflip(individuo, tasa):
+    """OneMax: cada gen se invierte (0↔1) con probabilidad 'tasa'."""
+    return [1 - gen if random.random() < tasa else gen for gen in individuo]
+
+
+def mutacion_intercambio(individuo, tasa):
+    """TSP: con probabilidad 'tasa', se intercambian dos ciudades al azar."""
+    mutado = individuo[:]
+    if len(mutado) >= 2 and random.random() < tasa:
+        i, j = random.sample(range(len(mutado)), 2)
+        mutado[i], mutado[j] = mutado[j], mutado[i]
+    return mutado
