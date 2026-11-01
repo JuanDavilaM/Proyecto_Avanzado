@@ -1,5 +1,3 @@
-#ruta pruebas ricardo: C:\Users\Ricardo\Downloads\problemas.json
-
 import json
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida

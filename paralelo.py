@@ -5,11 +5,12 @@ import os
 
 
 def nucleos_disponibles():
+    """Número de núcleos lógicos de la máquina."""
     return os.cpu_count() or 1
 
-"""Vemos si el numero de nucleos es un entero o si está fuera de rango o no es entero, devuelve None."""
 
 def validar_num_nucleos(valor):
+    """Vemos si el numero de nucleos es un entero o si está fuera de rango o no es entero, devuelve None."""
     try:
         n = int(valor)
     except (ValueError, TypeError):
