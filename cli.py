@@ -1,10 +1,9 @@
 #ruta pruebas ricardo: C:\Users\Ricardo\Downloads\problemas.json
 
-from io_json import read_json, separar_problemas, individualizar_problemas, leer_metadatos_nucleos_y_salida
+import json
 
+from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos
-
-import os
 
 ### MENÚS ###
 
@@ -48,24 +47,45 @@ def mostrar_menu_parametros_ejecucion(cleaned_data):
         print(f"Se usarán {nuevo} núcleos.")
 
 def mostrar_menu_cargar_json(cleaned_data):
-
-    last_menu = "mostrar menú json" #Por si luego es necesario
+    """Carga un JSON, lo expande en ejecuciones y reinicia el estado de la sesión.
+    Si algo falla, el estado anterior se conserva intacto."""
+    ruta = input("Ruta del archivo JSON: ").strip().strip('"\'')
 
     try:
-        ruta = input("Introduce una ruta válida del equipo de donde extraer el .json: ")
         data = read_json(ruta)
-        problemas_onemax, problemas_tsp = separar_problemas(data)
-        problemas_onemax = individualizar_problemas(problemas_onemax)
-        problemas_tsp = individualizar_problemas(problemas_tsp)
-        data = leer_metadatos_nucleos_y_salida(data, cleaned_data)
-        data["problemas_onemax"] = problemas_onemax
-        data["problemas_tsp"] = problemas_tsp
-        print("Problemas cargados con éxito")
-        print(data)
-    except:
-        print("Ruta inválida, ¿Se te ha olvidado quitarle las 2 comillas a la ruta?")
+        ejecuciones = construir_ejecuciones(data)
+        salida, num_nucleos_json = leer_metadatos_nucleos_y_salida(data)
+    except FileNotFoundError:
+        print(f"No se encuentra el archivo: {ruta}")
+        return
+    except OSError as error:
+        print(f"No se puede leer el archivo: {error}")
+        return
+    except json.JSONDecodeError as error:
+        print(f"El archivo no es un JSON válido (línea {error.lineno}): {error.msg}")
+        return
+    except ValueError as error:
+        print(f"Formato de problemas incorrecto: {error}")
+        return
 
-    return data
+    if not ejecuciones:
+        print("El archivo no contiene ningún problema (problemas_onemax, problemas_tsp o tipo).")
+        return
+
+    num_nucleos = validar_num_nucleos(num_nucleos_json)
+    if num_nucleos is None:
+        num_nucleos = nucleos_disponibles()
+        print(f"Aviso: num_nucleos = {num_nucleos_json} no es válido en esta máquina; se usarán {num_nucleos}.")
+
+    cleaned_data["archivo"] = ruta
+    cleaned_data["ejecuciones"] = ejecuciones
+    cleaned_data["salida"] = salida
+    cleaned_data["num_nucleos"] = num_nucleos
+    cleaned_data["historial"] = []
+
+    n_onemax = sum(1 for e in ejecuciones if e["tipo"] == "onemax")
+    n_tsp = len(ejecuciones) - n_onemax
+    print(f"Cargadas {len(ejecuciones)} ejecuciones ({n_onemax} OneMax, {n_tsp} TSP). Núcleos: {num_nucleos}.")
 
 def user_request(valid_options, last_menu, cleaned_data):
 
@@ -77,8 +97,8 @@ def user_request(valid_options, last_menu, cleaned_data):
             return True, None
         elif comando in valid_options:
             if comando == 1 and last_menu == "inicio":
-                data = mostrar_menu_cargar_json(cleaned_data)
-                return True, data
+                mostrar_menu_cargar_json(cleaned_data)
+                return True, None
             elif comando == 2 and last_menu == "inicio":
                 mostrar_menu_parametros_ejecucion(cleaned_data)
                 return True, None
