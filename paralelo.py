@@ -1,22 +1,19 @@
+"""Ejecución en paralelo de las ejecuciones del algoritmo genético
+y utilidades relacionadas con los núcleos de la máquina."""
+
 import os
-import multiprocessing
 
-def request_hilos():
 
-    numero_maquina_hilos = os.cpu_count()
+def nucleos_disponibles():
+    return os.cpu_count() or 1
 
-    print(f"El número de hilos de la máquina es: {numero_maquina_hilos}")
+"""Vemos si el numero de nucleos es un entero o si está fuera de rango o no es entero, devuelve None."""
 
-    numero_anular = int(input("Introduce el número de núcleos que quieres anular: "))
-
-    numero_hilos_usar = numero_maquina_hilos-numero_anular
-
-    if numero_hilos_usar <= 0:
-        print("Número incorrecto de hilos")
-        request_hilos()
-    else: 
-        print(f"Número correcto de hilos, se usarán {numero_hilos_usar}")
-
-    return numero_hilos_usar
-
-    
+def validar_num_nucleos(valor):
+    try:
+        n = int(valor)
+    except (ValueError, TypeError):
+        return None
+    if 1 <= n <= nucleos_disponibles():
+        return n
+    return None

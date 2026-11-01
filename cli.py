@@ -2,7 +2,7 @@
 
 from io_json import read_json, separar_problemas, individualizar_problemas, leer_metadatos_nucleos_y_salida
 
-from paralelo import request_hilos
+from paralelo import nucleos_disponibles, validar_num_nucleos
 
 import os
 
@@ -27,17 +27,25 @@ def mostrar_menu_inicio():
 
     return valid_options, last_menu
 
-def mostrar_menu_parametros_ejecucion():
+def mostrar_menu_parametros_ejecucion(cleaned_data):
+    """Permite sobrescribir el número de núcleos de la sesión sin editar el JSON."""
+    actual = cleaned_data.get("num_nucleos", 1)
+    maximo = nucleos_disponibles()
 
-    last_menu = "ajustar parámetros de ejecución" #Por si luego es necesario
+    print(f"Núcleos disponibles en esta máquina: {maximo}")
+    print(f"Núcleos configurados actualmente: {actual}")
+    entrada = input(f"Nuevo número de núcleos (1-{maximo}) o Enter para mantener: ").strip()
 
-    try:
-        numero_hilos_usar = request_hilos()
-    except:
-        print("Número erroneo")
-        numero_hilos_usar = mostrar_menu_parametros_ejecucion()
+    if entrada == "":
+        print(f"Se mantiene {actual}.")
+        return
 
-    return numero_hilos_usar
+    nuevo = validar_num_nucleos(entrada)
+    if nuevo is None:
+        print(f"Valor no válido: debe ser un entero entre 1 y {maximo}. Se mantiene {actual}.")
+    else:
+        cleaned_data["num_nucleos"] = nuevo
+        print(f"Se usarán {nuevo} núcleos.")
 
 def mostrar_menu_cargar_json(cleaned_data):
 
@@ -72,9 +80,8 @@ def user_request(valid_options, last_menu, cleaned_data):
                 data = mostrar_menu_cargar_json(cleaned_data)
                 return True, data
             elif comando == 2 and last_menu == "inicio":
-                data = mostrar_menu_parametros_ejecucion()
-                cleaned_data["numero_nucleos_introducido"] = data
-                return True, data
+                mostrar_menu_parametros_ejecucion(cleaned_data)
+                return True, None
             elif comando == 6 and last_menu == "inicio":
                 print("Programa Finalizado")
                 return False, None
