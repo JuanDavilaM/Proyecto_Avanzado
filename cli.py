@@ -122,6 +122,7 @@ def mostrar_menu_consultar_estado(cleaned_data):
 
     registro = conocer_registro_resultados(cleaned_data)
 
+    print()
     print(f"Problemas totales cargados ahora mismo: {problemas_totales}")
     print(f"Problemas \"one max\" cargados ahora mismo: {problemas_onemax}")
     print(f"Problemas \"tsp\" cargados ahora mismo: {problemas_tsp}")
