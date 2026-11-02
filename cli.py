@@ -2,6 +2,7 @@ import json
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
+from visualizacion import conocer_cuantos_problemas_cargados
 
 ### MENÚS ###
 
@@ -96,9 +97,26 @@ def mostrar_menu_ejecutar(cleaned_data):
 
     print("Ejecutando...")
     cleaned_data["historial"].append(ejecutar_en_paralelo(cleaned_data))
+    del cleaned_data["ejecuciones"]
     print("Proceso Finalizado")
 
     return cleaned_data["historial"]
+
+def mostrar_menu_consultar_estado(cleaned_data):
+
+    if cleaned_data == {}:
+        return print("Datos no cargados todavía, redirigiendo al menú principal")
+
+    last_menu = "consultar estado"
+
+    problemas_totales, problemas_onemax, problemas_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
+
+    print(f"Problemas totales cargados ahora mismo: {problemas_totales}")
+    print(f"Problemas \"one max\" cargados ahora mismo: {problemas_onemax}")
+    print(f"Problemas \"tsp\" cargados ahora mismo: {problemas_tsp}")
+    #print(f"Total de problemas resueltos en esta sesión: {}")
+    #print(f"Tiempo total de ejecución de problemas: {}")
+    #print(f"Registro en formato dataframe de id, tipo de problema, tiempo de ejecución y resultado de cada problema")
 
 def user_request(valid_options, last_menu, cleaned_data):
 
@@ -117,6 +135,9 @@ def user_request(valid_options, last_menu, cleaned_data):
                 return True, None
             elif comando == 3 and last_menu == "inicio":
                 mostrar_menu_ejecutar(cleaned_data)
+                return True, None
+            elif comando == 4 and last_menu == "inicio":
+                mostrar_menu_consultar_estado(cleaned_data)
                 return True, None
             elif comando == 6 and last_menu == "inicio":
                 print("Programa Finalizado")
