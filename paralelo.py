@@ -2,6 +2,9 @@
 y utilidades relacionadas con los núcleos de la máquina."""
 
 import os
+import multiprocessing
+
+from ejecucion import ejecutar_una
 
 
 def nucleos_disponibles():
@@ -18,3 +21,24 @@ def validar_num_nucleos(valor):
     if 1 <= n <= nucleos_disponibles():
         return n
     return None
+
+def ejecutar_en_paralelo(cleaned_data):
+    """Lanza las ejecuciones cargadas repartidas entre varios procesos."""
+
+    ejecuciones = cleaned_data.get("ejecuciones", [])
+
+    if ejecuciones == []:
+        print("No hay datos cargados, asegurate de cargar un .json")
+        return []
+
+    num_procesos = cleaned_data["num_nucleos"]
+
+    if len(ejecuciones) < num_procesos:
+        num_procesos = len(ejecuciones)
+
+    # Con un solo proceso no compensa crear un pool: se ejecuta en serie.
+    if num_procesos == 1:
+        return [ejecutar_una(e) for e in ejecuciones]
+
+    with multiprocessing.Pool(processes=num_procesos) as pool:
+        return pool.map(ejecutar_una, ejecuciones)
