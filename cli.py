@@ -2,7 +2,10 @@ import json
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
-from visualizacion import conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos
+from ejecucion import formatear_tiempo
+from visualizacion import *
+
+import time
 
 ### MENÚS ###
 
@@ -82,6 +85,8 @@ def mostrar_menu_cargar_json(cleaned_data):
     cleaned_data["num_nucleos"] = num_nucleos
     if "historial" not in cleaned_data:
         cleaned_data["historial"] = []
+    if "tiempos_tanda" not in cleaned_data:
+        cleaned_data["tiempos_tanda"] = []
 
     n_onemax = sum(1 for e in ejecuciones if e["tipo"] == "onemax")
     n_tsp = len(ejecuciones) - n_onemax
@@ -96,7 +101,9 @@ def mostrar_menu_ejecutar(cleaned_data):
         return []
 
     print("Ejecutando...")
+    inicio = time.perf_counter()
     cleaned_data["historial"].append(ejecutar_en_paralelo(cleaned_data))
+    cleaned_data["tiempos_tanda"].append(time.perf_counter() - inicio)
     del cleaned_data["ejecuciones"]
     print("Proceso Finalizado")
 
@@ -111,12 +118,15 @@ def mostrar_menu_consultar_estado(cleaned_data):
 
     problemas_totales, problemas_onemax, problemas_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
     problemas_resueltos = conocer_cuantos_problemas_resueltos(cleaned_data)
+    suma_segundos_de_ejecucion = conocer_tiempo_total_ejecucion(cleaned_data)
+    suma_segundos_real = conocer_tiempo_real_ejecucion(cleaned_data)
 
     print(f"Problemas totales cargados ahora mismo: {problemas_totales}")
     print(f"Problemas \"one max\" cargados ahora mismo: {problemas_onemax}")
     print(f"Problemas \"tsp\" cargados ahora mismo: {problemas_tsp}")
     print(f"Total de problemas resueltos en esta sesión: {problemas_resueltos}")
-    #print(f"Tiempo total de ejecución de problemas: {}")
+    print(f"Tiempo total de ejecución de problemas: {formatear_tiempo(suma_segundos_de_ejecucion)}")
+    print(f"Tiempo real de ejecución de problemas: {formatear_tiempo(suma_segundos_real)}")
     #print(f"Registro en formato dataframe de id, tipo de problema, tiempo de ejecución y resultado de cada problema")
 
 def user_request(valid_options, last_menu, cleaned_data):
