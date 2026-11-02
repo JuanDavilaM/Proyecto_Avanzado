@@ -42,3 +42,39 @@ def comprobar_ejecucion(ejecucion):
         for ciudad in ejecucion["ciudades"]:
             if len(ciudad) != 2:
                 raise ValueError(f"cada ciudad debe ser [x, y] (recibido: {ciudad})")
+
+
+def preparar_problema(ejecucion):
+   
+      
+    comprobar_ejecucion(ejecucion)
+    optimo = ejecucion.get("optimo_conocido")
+
+    if ejecucion["tipo"] == "onemax":
+        return {
+            "tamano_individuo": ejecucion["longitud_gen"],
+            "generador": problemas.generar_bitstring,
+            "fitness": problemas.fitness_onemax,
+            "cruce": problemas.cruce_un_punto,
+            "mutacion": problemas.mutacion_bitflip,
+            "datos_extra": (),
+            "fitness_objetivo": optimo,
+        }
+
+    # TSP: la matriz se calcula una sola vez, antes de ejecutar el algoritmo.
+    matriz = problemas.matriz_distancias(ejecucion["ciudades"])
+
+    if optimo is None:
+        objetivo = None
+    else:
+        objetivo = -optimo
+
+    return {
+        "tamano_individuo": len(ejecucion["ciudades"]),
+        "generador": problemas.generar_permutacion,
+        "fitness": problemas.fitness_tsp,
+        "cruce": problemas.cruce_ox,
+        "mutacion": problemas.mutacion_intercambio,
+        "datos_extra": (matriz,),
+        "fitness_objetivo": objetivo,
+    }
