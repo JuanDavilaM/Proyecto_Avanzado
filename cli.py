@@ -1,7 +1,7 @@
 import json
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
-from paralelo import nucleos_disponibles, validar_num_nucleos
+from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
 
 ### MENÚS ###
 
@@ -79,11 +79,26 @@ def mostrar_menu_cargar_json(cleaned_data):
     cleaned_data["ejecuciones"] = ejecuciones
     cleaned_data["salida"] = salida
     cleaned_data["num_nucleos"] = num_nucleos
-    cleaned_data["historial"] = []
+    if "historial" not in cleaned_data:
+        cleaned_data["historial"] = []
 
     n_onemax = sum(1 for e in ejecuciones if e["tipo"] == "onemax")
     n_tsp = len(ejecuciones) - n_onemax
     print(f"Cargadas {len(ejecuciones)} ejecuciones ({n_onemax} OneMax, {n_tsp} TSP). Núcleos: {num_nucleos}.")
+
+def mostrar_menu_ejecutar(cleaned_data):
+
+    ejecuciones = cleaned_data.get("ejecuciones", [])
+
+    if ejecuciones == []:
+        print("No hay datos cargados, asegurate de cargar un .json")
+        return []
+
+    print("Ejecutando...")
+    cleaned_data["historial"].append(ejecutar_en_paralelo(cleaned_data))
+    print("Proceso Finalizado")
+
+    return cleaned_data["historial"]
 
 def user_request(valid_options, last_menu, cleaned_data):
 
@@ -99,6 +114,9 @@ def user_request(valid_options, last_menu, cleaned_data):
                 return True, None
             elif comando == 2 and last_menu == "inicio":
                 mostrar_menu_parametros_ejecucion(cleaned_data)
+                return True, None
+            elif comando == 3 and last_menu == "inicio":
+                mostrar_menu_ejecutar(cleaned_data)
                 return True, None
             elif comando == 6 and last_menu == "inicio":
                 print("Programa Finalizado")

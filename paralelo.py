@@ -27,10 +27,6 @@ def ejecutar_en_paralelo(cleaned_data):
 
     ejecuciones = cleaned_data.get("ejecuciones", [])
 
-    if ejecuciones == []:
-        print("No hay datos cargados, asegurate de cargar un .json")
-        return []
-
     num_procesos = cleaned_data["num_nucleos"]
 
     if len(ejecuciones) < num_procesos:
