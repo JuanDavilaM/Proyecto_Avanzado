@@ -1,0 +1,7 @@
+{
+  "tipo": "onemax",
+  "tamano_poblacion": 20,
+  "num_generaciones": 30,
+  "tasa_mutacion": 0.1,
+  "longitud_gen": 10
+}

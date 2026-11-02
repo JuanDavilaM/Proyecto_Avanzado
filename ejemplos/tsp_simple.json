@@ -1,0 +1,7 @@
+{
+  "tipo": "tsp",
+  "tamano_poblacion": 50,
+  "num_generaciones": 200,
+  "tasa_mutacion": 0.2,
+  "ciudades": [[17, 72], [97, 8], [32, 15], [63, 97]]
+}
