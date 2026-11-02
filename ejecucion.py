@@ -78,3 +78,57 @@ def preparar_problema(ejecucion):
         "datos_extra": (matriz,),
         "fitness_objetivo": objetivo,
     }
+
+
+def ejecutar_una(ejecucion):
+    #Resuelve UNA ejecució
+    #Recibe un solo argumento y es una función para poder pasarla a multiprocessingPool
+    
+    identificador = ejecucion.get("id")
+
+    try:
+        p = preparar_problema(ejecucion)
+        bruto = ga_engine.run_genetic_algorithm(
+            ejecucion["tamano_poblacion"], p["tamano_individuo"],
+            ejecucion["num_generaciones"], ejecucion["tasa_mutacion"],
+            p["generador"], p["fitness"], p["cruce"], p["mutacion"],
+            *p["datos_extra"],
+            fitness_objetivo=p["fitness_objetivo"],
+            semilla=identificador)
+    except Exception as error:
+        return {
+            "id": identificador,
+            "tipo": ejecucion.get("tipo"),
+            "configuracion": ejecucion,
+            "error": f"{type(error).__name__}: {error}",
+        }
+
+    # En TSP la fitness es la distancia en negativo: se devuelve en positivo.
+    if ejecucion["tipo"] == "tsp":
+        signo = -1
+    else:
+        signo = 1
+
+    evolucion = []
+    for valor in bruto["evolucion"]:
+        evolucion.append(signo * valor)
+
+    hasta_optimo = bruto["segundos_hasta_optimo"]
+    if hasta_optimo is None:
+        texto_hasta_optimo = None
+    else:
+        texto_hasta_optimo = formatear_tiempo(hasta_optimo)
+
+    return {
+        "id": identificador,
+        "tipo": ejecucion["tipo"],
+        "configuracion": ejecucion,
+        "mejor_valor": signo * bruto["mejor_fitness"],
+        "mejor_individuo": bruto["mejor_individuo"],
+        "generacion_optimo": bruto["generacion_optimo"],
+        "segundos_hasta_optimo": hasta_optimo,
+        "tiempo_hasta_optimo": texto_hasta_optimo,
+        "segundos_totales": bruto["segundos_totales"],
+        "tiempo_total": formatear_tiempo(bruto["segundos_totales"]),
+        "evolucion": evolucion,
+    }
