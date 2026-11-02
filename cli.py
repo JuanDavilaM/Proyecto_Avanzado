@@ -2,7 +2,7 @@ import json
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
-from visualizacion import conocer_cuantos_problemas_cargados
+from visualizacion import conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos
 
 ### MENÚS ###
 
@@ -110,11 +110,12 @@ def mostrar_menu_consultar_estado(cleaned_data):
     last_menu = "consultar estado"
 
     problemas_totales, problemas_onemax, problemas_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
+    problemas_resueltos = conocer_cuantos_problemas_resueltos(cleaned_data)
 
     print(f"Problemas totales cargados ahora mismo: {problemas_totales}")
     print(f"Problemas \"one max\" cargados ahora mismo: {problemas_onemax}")
     print(f"Problemas \"tsp\" cargados ahora mismo: {problemas_tsp}")
-    #print(f"Total de problemas resueltos en esta sesión: {}")
+    print(f"Total de problemas resueltos en esta sesión: {problemas_resueltos}")
     #print(f"Tiempo total de ejecución de problemas: {}")
     #print(f"Registro en formato dataframe de id, tipo de problema, tiempo de ejecución y resultado de cada problema")
 
