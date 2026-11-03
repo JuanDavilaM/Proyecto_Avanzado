@@ -34,3 +34,9 @@ Cada vez que el enunciado admite varias interpretaciones, anotamos aquí cuál e
 ## 8. Carga fallida
 - **Decisión:** si la carga de un archivo falla, se conserva el estado anterior.
 - **Motivo:** un error al escribir la ruta no debe hacer perder los problemas ya cargados.
+
+## 9. Gráfico con varias ejecuciones del mismo tamaño
+Cuando varias ejecuciones tienen el mismo N, se dibuja la media de sus tiempos. Solo cuentan las que tienen optimo_conocido y llegaron a él. Es fácil de leer y da un único punto por tamaño.
+
+## 10. Exportar resultados
+El JSON guarda la configuración, el resultado y los tiempos de cada ejecución, más el tiempo total. matplotlib solo se carga al dibujar el gráfico: si falta, el programa avisa y sigue funcionando.
