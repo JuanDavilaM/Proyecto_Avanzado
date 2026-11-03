@@ -85,3 +85,33 @@ def puntos_grafico(historial):
         puntos[tipo] = lista
 
     return puntos
+
+
+def dibujar_grafico(puntos, ruta):
+    #Dibuja N frente al tiempo hasta el óptimo (una línea por tipo de problema).
+    try:
+        import matplotlib
+        matplotlib.use("Agg")  # dibuja a un archivo, sin abrir ventanas
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("No se puede dibujar el gráfico: falta matplotlib (pip3 install matplotlib).")
+        return False
+
+    dibujado = False
+    plt.figure()
+    for tipo, lista in puntos.items():
+        if len(lista) < 2:
+            continue
+        xs = [n for n, _ in lista]
+        ys = [t for _, t in lista]
+        plt.plot(xs, ys, marker="o", label=tipo)
+        dibujado = True
+
+    if dibujado:
+        plt.xlabel("Tamaño del problema (N)")
+        plt.ylabel("Segundos hasta alcanzar el óptimo")
+        plt.title("Rendimiento del algoritmo genético")
+        plt.legend()
+        plt.savefig(ruta)
+    plt.close()
+    return dibujado
