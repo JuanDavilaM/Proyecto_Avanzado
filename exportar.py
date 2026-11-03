@@ -52,3 +52,36 @@ def guardar_resultados(historial, tiempos, ruta):
     with open(ruta, "w", encoding="utf-8") as archivo:
         json.dump(datos, archivo, ensure_ascii=False, indent=2)
     return len(ejecuciones)
+
+# Calcula los datos para el gráfico.
+def tamano_problema(configuracion):
+    if "ciudades" in configuracion:
+        return len(configuracion["ciudades"])
+    return configuracion["longitud_gen"]
+
+
+def puntos_grafico(historial):
+    tiempos_por_tamano = {}
+
+    for r in obtener_resultados(historial):
+        if "error" in r:
+            continue
+        configuracion = r["configuracion"]
+        if "optimo_conocido" not in configuracion:
+            continue
+        if r["segundos_hasta_optimo"] is None:
+            continue
+
+        tipo = r["tipo"]
+        n = tamano_problema(configuracion)
+        tiempos_por_tamano.setdefault(tipo, {}).setdefault(n, []).append(r["segundos_hasta_optimo"])
+
+    puntos = {}
+    for tipo, por_tamano in tiempos_por_tamano.items():
+        lista = []
+        for n in sorted(por_tamano):
+            tiempos = por_tamano[n]
+            lista.append((n, sum(tiempos) / len(tiempos)))
+        puntos[tipo] = lista
+
+    return puntos
