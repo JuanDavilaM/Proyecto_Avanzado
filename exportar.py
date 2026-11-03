@@ -14,3 +14,41 @@ def obtener_resultados(historial):
         for resultado in tanda:
             resultados.append(resultado)
     return resultados
+
+
+def guardar_resultados(historial, tiempos, ruta):
+    """Escribe en un único JSON la configuración, el resultado y el tiempo de cada ejecución.
+    Devuelve cuántas ejecuciones se han guardado."""
+    ejecuciones = []
+    for r in obtener_resultados(historial):
+        if "error" in r:
+            ejecuciones.append({
+                "id": r.get("id"),
+                "tipo": r.get("tipo"),
+                "configuracion": r.get("configuracion"),
+                "error": r["error"],
+            })
+        else:
+            ejecuciones.append({
+                "id": r["id"],
+                "tipo": r["tipo"],
+                "configuracion": r["configuracion"],
+                "mejor_valor": r["mejor_valor"],
+                "mejor_individuo": r["mejor_individuo"],
+                "generacion_optimo": r["generacion_optimo"],
+                "tiempo_total": r["tiempo_total"],
+                "segundos_totales": r["segundos_totales"],
+                "tiempo_hasta_optimo": r["tiempo_hasta_optimo"],
+                "segundos_hasta_optimo": r["segundos_hasta_optimo"],
+            })
+
+    tiempo_conjunto = sum(tiempos)
+    datos = {
+        "tiempo_real_total": formatear_tiempo(tiempo_conjunto),
+        "segundos_reales_total": tiempo_conjunto,
+        "ejecuciones": ejecuciones,
+    }
+
+    with open(ruta, "w", encoding="utf-8") as archivo:
+        json.dump(datos, archivo, ensure_ascii=False, indent=2)
+    return len(ejecuciones)
