@@ -10,8 +10,8 @@ def obtener_resultados(historial):
     """El historial es una lista de vueltas (una por cada vez que se ejecuta la opción 3);
     devuelve una única lista con todos los resultados."""
     resultados = []
-    for tanda in historial:
-        for resultado in tanda:
+    for lista in historial:
+        for resultado in lista:
             resultados.append(resultado)
     return resultados
 
