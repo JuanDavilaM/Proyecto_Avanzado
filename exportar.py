@@ -115,3 +115,34 @@ def dibujar_grafico(puntos, ruta):
         plt.savefig(ruta)
     plt.close()
     return dibujado
+
+# Exporta los resultados y genera el gráfico si está configurado.
+def exportar_resultados(cleaned_data):
+    historial = cleaned_data.get("historial", [])
+    if not historial:
+        print("No hay resultados todavía: ejecuta primero con la opción 3.")
+        return
+
+    salida = cleaned_data.get("salida")
+    if not isinstance(salida, dict) or "guardar_en" not in salida:
+        print("El archivo cargado no configura una salida (guardar_en), no hay dónde exportar.")
+        return
+
+    ruta = salida["guardar_en"]
+    try:
+        cuantas = guardar_resultados(historial, cleaned_data.get("tiempos_tanda", []), ruta)
+    except OSError as error:
+        print(f"No se pudo escribir {ruta}: {error}")
+        return
+
+    print(f"Guardadas {cuantas} ejecuciones en {ruta}")
+
+    if salida.get("grafico_rendimiento"):
+        ruta_grafico = os.path.splitext(ruta)[0] + "_rendimiento.png"
+        puntos = puntos_grafico(historial)
+
+        if not any(len(lista) >= 2 for lista in puntos.values()):
+            print("No se generó el gráfico: hacen falta problemas del mismo tipo con "
+                  "optimo_conocido, de al menos 2 tamaños distintos, que hayan llegado al óptimo.")
+        elif dibujar_grafico(puntos, ruta_grafico):
+            print(f"Gráfico guardado en {ruta_grafico}")
