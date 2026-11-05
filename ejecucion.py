@@ -1,11 +1,12 @@
-#prepara cada ejecución del json y la lanza contra el motor genético.
+"""Preparación de cada ejecución del JSON y su lanzamiento contra el motor genético."""
 
 import ga_engine
 import problemas
 
 
 def formatear_tiempo(segundos):
-    
+    """Convierte segundos en texto con horas, minutos y segundos (p. ej. '0h 1m 5.25s')."""
+    segundos = round(segundos, 2)
     horas = int(segundos // 3600)
     minutos = int((segundos % 3600) // 60)
     resto = segundos - horas * 3600 - minutos * 60
@@ -64,7 +65,9 @@ def comprobar_ejecucion(ejecucion):
         raise ValueError(f"optimo_conocido debe ser un número (recibido: {optimo!r})")
 
 def preparar_problema(ejecucion):
-   
+    """Valida la ejecución y elige las funciones del problema según su tipo.
+    En TSP calcula la matriz de distancias una sola vez y pasa el óptimo a escala
+    de fitness (distancia en negativo), que es lo que espera el motor."""
       
     comprobar_ejecucion(ejecucion)
     optimo = ejecucion.get("optimo_conocido")
@@ -100,8 +103,9 @@ def preparar_problema(ejecucion):
 
 
 def ejecutar_una(ejecucion):
-    #Resuelve UNA ejecució
-    #Recibe un solo argumento y es una función para poder pasarla a multiprocessingPool
+    """Resuelve una ejecución y devuelve su resultado con tiempos, o el error si falla.
+    Recibe un único argumento y está definida a nivel de módulo para poder pasarla
+    a multiprocessing.Pool.map, que envía la función a otro proceso."""
     
     identificador = ejecucion.get("id")
 
