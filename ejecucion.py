@@ -12,8 +12,19 @@ def formatear_tiempo(segundos):
     return f"{horas}h {minutos}m {resto:.2f}s"
 
 
+def _es_entero(valor):
+    """True si es un entero de verdad (en Python, True y False también cuentan como int)."""
+    return isinstance(valor, int) and not isinstance(valor, bool)
+
+
+def _es_numero(valor):
+    """True si es un entero o un decimal, excluyendo True y False."""
+    return isinstance(valor, (int, float)) and not isinstance(valor, bool)
+
+
 def comprobar_ejecucion(ejecucion):
-    
+    """Comprueba claves, tipos y rangos de una ejecución antes de resolverla.
+    Si algo no es correcto, lanza ValueError con un mensaje que dice qué falla."""
     tipo = ejecucion.get("tipo")
     if tipo not in ("onemax", "tsp"):
         raise ValueError(f'tipo de problema desconocido: "{tipo}"')
@@ -23,26 +34,34 @@ def comprobar_ejecucion(ejecucion):
         claves.append("longitud_gen")
     else:
         claves.append("ciudades")
-
     for clave in claves:
         if clave not in ejecucion:
             raise ValueError(f'falta la clave "{clave}"')
 
-    if ejecucion["tamano_poblacion"] < 1 or ejecucion["num_generaciones"] < 1:
-        raise ValueError("tamano_poblacion y num_generaciones deben ser al menos 1")
-    if ejecucion["tasa_mutacion"] < 0 or ejecucion["tasa_mutacion"] > 1:
-        raise ValueError("tasa_mutacion debe estar entre 0 y 1")
+    for clave in ("tamano_poblacion", "num_generaciones"):
+        valor = ejecucion[clave]
+        if not _es_entero(valor) or valor < 1:
+            raise ValueError(f"{clave} debe ser un entero mayor o igual que 1 (recibido: {valor!r})")
+
+    tasa = ejecucion["tasa_mutacion"]
+    if not _es_numero(tasa) or not 0 <= tasa <= 1:
+        raise ValueError(f"tasa_mutacion debe ser un número entre 0 y 1 (recibido: {tasa!r})")
 
     if tipo == "onemax":
-        if ejecucion["longitud_gen"] < 1:
-            raise ValueError("longitud_gen debe ser al menos 1")
+        longitud = ejecucion["longitud_gen"]
+        if not _es_entero(longitud) or longitud < 1:
+            raise ValueError(f"longitud_gen debe ser un entero mayor o igual que 1 (recibido: {longitud!r})")
     else:
-        if len(ejecucion["ciudades"]) < 2:
-            raise ValueError("ciudades necesita al menos 2 ciudades")
-        for ciudad in ejecucion["ciudades"]:
-            if len(ciudad) != 2:
-                raise ValueError(f"cada ciudad debe ser [x, y] (recibido: {ciudad})")
+        ciudades = ejecucion["ciudades"]
+        if not isinstance(ciudades, list) or len(ciudades) < 2:
+            raise ValueError("ciudades debe ser una lista con al menos 2 ciudades")
+        for ciudad in ciudades:
+            if not isinstance(ciudad, list) or len(ciudad) != 2 or not all(_es_numero(c) for c in ciudad):
+                raise ValueError(f"cada ciudad debe ser [x, y] con dos números (recibido: {ciudad!r})")
 
+    optimo = ejecucion.get("optimo_conocido")
+    if optimo is not None and not _es_numero(optimo):
+        raise ValueError(f"optimo_conocido debe ser un número (recibido: {optimo!r})")
 
 def preparar_problema(ejecucion):
    
