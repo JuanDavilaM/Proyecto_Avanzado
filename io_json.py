@@ -40,12 +40,15 @@ def separar_problemas(data):
 
 
 def individualizar_problemas(problemas):
-    """Expande cada problema en una ejecución por combinación de hiperparámetros."""
+    """Expande cada problema en una ejecución por combinación de hiperparámetros.
+    Solo los hiperparámetros del solucionador pueden darse como lista (§4.2);
+    cualquier otra lista (ciudades, datos nuevos del problema) se conserva entera."""
+    claves_rejilla = ("tamano_poblacion", "num_generaciones", "tasa_mutacion")
     resultado = []
     for problema in problemas:
         combinaciones = [{}]
         for clave, valor in problema.items():
-            if type(valor) == list and clave != "ciudades":
+            if clave in claves_rejilla and isinstance(valor, list):
                 opciones = valor
             else:
                 opciones = [valor]
