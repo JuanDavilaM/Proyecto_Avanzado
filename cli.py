@@ -6,6 +6,7 @@ from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_s
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
 from ejecucion import formatear_tiempo
 from visualizacion import *
+from exportar import exportar_resultados
 
 ### MENÚS ###
 
@@ -152,6 +153,9 @@ def user_request(valid_options, last_menu, cleaned_data):
                 return True, None
             elif comando == 4 and last_menu == "inicio":
                 mostrar_menu_consultar_estado(cleaned_data)
+                return True, None
+            elif comando == 5 and last_menu == "inicio":
+                exportar_resultados(cleaned_data)
                 return True, None
             elif comando == 6 and last_menu == "inicio":
                 print("Programa Finalizado")
