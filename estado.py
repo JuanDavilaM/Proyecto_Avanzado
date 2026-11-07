@@ -59,19 +59,22 @@ def tabla_historial(historial):
     """Líneas de texto con el resultado y los tiempos de cada ejecución hecha, por tandas."""
     if not historial:
         return ["  (todavía no se ha ejecutado nada: usa la opción 3)"]
-    lineas = [f"{'tanda':>5}{'id':>4}  {'tipo':<7}{'N':>5}{'mejor valor':>13}"
-              f"{'gen. óptimo':>13}{'hasta óptimo':>15}{'tiempo total':>15}"]
     lineas = [f"{'tanda':>5}{'id':>6}  {'tipo':<7}{'N':>5}{'mejor valor':>13}"
-          f"{'gen. óptimo':>13}{'hasta óptimo':>15}{'tiempo total':>15}"]
+              f"{'gen. óptimo':>13}{'hasta óptimo':>15}{'tiempo total':>15}  mejor individuo (TSP)"]
     for numero_tanda, tanda in enumerate(historial, start=1):
         for r in tanda:
             id_visible = f"{numero_tanda}.{_texto(r.get('id'))}"
             inicio = (f"{numero_tanda:>5}{id_visible:>6}  {_texto(r.get('tipo')):<7}"
-                    f"{_texto(_tamano(r.get('configuracion', {}))):>5}")
+                      f"{_texto(_tamano(r.get('configuracion', {}))):>5}")
             if "error" in r:
                 lineas.append(f"{inicio}  ERROR: {r['error']}")
             else:
+                if r.get("tipo") == "tsp":
+                    individuo = r.get("mejor_individuo")
+                else:
+                    individuo = None
                 lineas.append(
                     f"{inicio}{_texto(r.get('mejor_valor')):>13}{_texto(r.get('generacion_optimo')):>13}"
-                    f"{_texto(r.get('tiempo_hasta_optimo')):>15}{_texto(r.get('tiempo_total')):>15}")
+                    f"{_texto(r.get('tiempo_hasta_optimo')):>15}{_texto(r.get('tiempo_total')):>15}"
+                    f"  {_texto(individuo)}")
     return lineas
