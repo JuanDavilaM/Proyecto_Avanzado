@@ -36,6 +36,23 @@ def probar_tsp_circulo():
     print(f"     ruta: {resultado['mejor_individuo']}")
 
 
+def probar_dos_opt():
+    # En el círculo, cualquier ruta sin cruces es la óptima, así que 2-opt
+    # debe llegar siempre al óptimo partiendo de rutas aleatorias.
+    n, radio = 10, 100
+    ciudades = [[radio * math.cos(2 * math.pi * k / n), radio * math.sin(2 * math.pi * k / n)]
+                for k in range(n)]
+    matriz = problemas.matriz_distancias(ciudades)
+    optimo = 2 * n * radio * math.sin(math.pi / n)
+
+    for _ in range(5):
+        ruta = problemas.generar_permutacion(n)
+        mejorada = problemas.dos_opt(ruta, matriz)
+        print(f"2-opt: {problemas.longitud_ruta(ruta, matriz):8.2f} -> "
+              f"{problemas.longitud_ruta(mejorada, matriz):.2f} (óptimo {optimo:.2f})")
+
+
 if __name__ == "__main__":
     probar_onemax()
     probar_tsp_circulo()
+    probar_dos_opt()
