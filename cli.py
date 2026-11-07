@@ -1,11 +1,10 @@
 import json
 import time
-import pandas as pd
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
 from ejecucion import formatear_tiempo
-from visualizacion import *
+from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos, conocer_tiempo_real_ejecucion, tabla_ejecuciones_cargadas, tabla_historial)
 from exportar import exportar_resultados
 
 ### MENÚS ###
@@ -111,27 +110,37 @@ def mostrar_menu_ejecutar(cleaned_data):
     return cleaned_data["historial"]
 
 def mostrar_menu_consultar_estado(cleaned_data):
+    """Opción 4: muestra todo lo que mantiene el programa (§9): archivo, núcleos,
+    ejecuciones cargadas con sus parámetros e historial de resultados con sus tiempos."""
+    ejecuciones = cleaned_data.get("ejecuciones", [])
+    historial = cleaned_data.get("historial", [])
+    if not ejecuciones and not historial:
+        print("Todavía no hay nada cargado: usa la opción 1 para cargar un archivo de problemas.")
+        return
 
-    if cleaned_data == {}:
-        return print("Datos no cargados todavía, redirigiendo al menú principal")
-
-    last_menu = "consultar estado"
-
-    problemas_totales, problemas_onemax, problemas_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
-    problemas_resueltos = conocer_cuantos_problemas_resueltos(cleaned_data)
-    suma_segundos_real = conocer_tiempo_real_ejecucion(cleaned_data)
-
-    registro = conocer_registro_resultados(cleaned_data)
+    total, n_onemax, n_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
+    resueltos = conocer_cuantos_problemas_resueltos(cleaned_data)
+    hechas = sum(len(tanda) for tanda in historial)
+    tiempo_real = conocer_tiempo_real_ejecucion(cleaned_data)
 
     print()
-    print(f"Problemas totales cargados ahora mismo: {problemas_totales}")
-    print(f"Problemas \"one max\" cargados ahora mismo: {problemas_onemax}")
-    print(f"Problemas \"tsp\" cargados ahora mismo: {problemas_tsp}")
-    print(f"Total de problemas resueltos en esta sesión: {problemas_resueltos}")
-    print(f"Tiempo total de ejecución de problemas: {formatear_tiempo(suma_segundos_real)}")
-    if registro:
-        print("Registro de resultados:")
-        print(pd.DataFrame(registro).to_string(index=False))
+    print("========== ESTADO DE LA SESIÓN ==========")
+    print(f"Archivo cargado:      {cleaned_data.get('archivo', '-')}")
+    print(f"Núcleos en uso:       {cleaned_data.get('num_nucleos', 1)} (disponibles: {nucleos_disponibles()})")
+    print(f"Ejecuciones cargadas: {total} ({n_onemax} OneMax, {n_tsp} TSP)")
+    print(f"Ejecuciones hechas:   {hechas} en {len(historial)} tanda(s): "
+          f"{resueltos} correctas, {hechas - resueltos} con error")
+    print(f"Tiempo real total:    {formatear_tiempo(tiempo_real)}")
+
+    print()
+    print("--- Ejecuciones cargadas ---")
+    for linea in tabla_ejecuciones_cargadas(ejecuciones):
+        print(linea)
+
+    print()
+    print("--- Historial de resultados ---")
+    for linea in tabla_historial(historial):
+        print(linea)
 
 def user_request(valid_options, last_menu, cleaned_data):
     """Lee una opción del menú y la ejecuta.
