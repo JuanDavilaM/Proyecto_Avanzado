@@ -64,11 +64,12 @@ def comprobar_ejecucion(ejecucion):
     if optimo is not None and not _es_numero(optimo):
         raise ValueError(f"optimo_conocido debe ser un número (recibido: {optimo!r})")
 
+
 def preparar_problema(ejecucion):
     """Valida la ejecución y elige las funciones del problema según su tipo.
     En TSP calcula la matriz de distancias una sola vez y pasa el óptimo a escala
     de fitness (distancia en negativo), que es lo que espera el motor."""
-      
+
     comprobar_ejecucion(ejecucion)
     optimo = ejecucion.get("optimo_conocido")
 
@@ -106,7 +107,7 @@ def ejecutar_una(ejecucion):
     """Resuelve una ejecución y devuelve su resultado con tiempos, o el error si falla.
     Recibe un único argumento y está definida a nivel de módulo para poder pasarla
     a multiprocessing.Pool.map, que envía la función a otro proceso."""
-    
+
     identificador = ejecucion.get("id")
 
     try:
