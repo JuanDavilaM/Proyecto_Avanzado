@@ -134,48 +134,48 @@ def mostrar_menu_consultar_estado(cleaned_data):
         print(pd.DataFrame(registro).to_string(index=False))
 
 def user_request(valid_options, last_menu, cleaned_data):
-
-    try: 
+    """Lee una opción del menú y la ejecuta.
+    Devuelve (False, None) solo cuando el usuario quiere salir; en cualquier otro caso (True, None)."""
+    try:
         comando = int(input("Introduce un comando válido: "))
-
-        if comando not in valid_options:
-            print("Comando no válido, introduzca comando válido")
-            return True, None
-        elif comando in valid_options:
-            if comando == 1 and last_menu == "inicio":
-                mostrar_menu_cargar_json(cleaned_data)
-                return True, None
-            elif comando == 2 and last_menu == "inicio":
-                mostrar_menu_parametros_ejecucion(cleaned_data)
-                return True, None
-            elif comando == 3 and last_menu == "inicio":
-                mostrar_menu_ejecutar(cleaned_data)
-                return True, None
-            elif comando == 4 and last_menu == "inicio":
-                mostrar_menu_consultar_estado(cleaned_data)
-                return True, None
-            elif comando == 5 and last_menu == "inicio":
-                exportar_resultados(cleaned_data)
-                return True, None
-            elif comando == 6 and last_menu == "inicio":
-                print("Programa Finalizado")
-                return False, None
-            else:
-                print("Opción todavía no disponible")
-                return True, None
-    except:
-        print("ERROR, volviendo al último menú...")
+    except ValueError:
+        print("Comando no válido: escribe un número del 1 al 6.")
         return True, None
+
+    if comando not in valid_options:
+        print("Comando no válido: escribe un número del 1 al 6.")
+        return True, None
+
+    if comando == 6:
+        print("Programa Finalizado")
+        return False, None
+
+    try:
+        if comando == 1:
+            mostrar_menu_cargar_json(cleaned_data)
+        elif comando == 2:
+            mostrar_menu_parametros_ejecucion(cleaned_data)
+        elif comando == 3:
+            mostrar_menu_ejecutar(cleaned_data)
+        elif comando == 4:
+            mostrar_menu_consultar_estado(cleaned_data)
+        elif comando == 5:
+            exportar_resultados(cleaned_data)
+    except Exception as error:
+        print(f"Error inesperado en la opción {comando} ({type(error).__name__}: {error}). Volviendo al menú.")
+    return True, None
 
 def main():
     """Bucle principal del programa: muestra el menú hasta que el usuario sale."""
     evaluator = True
     cleaned_data = {}
 
-    while evaluator:
-        valid_options, last_menu = mostrar_menu_inicio()
-        evaluator, data = user_request(valid_options, last_menu, cleaned_data)
-
+    try:
+        while evaluator:
+            valid_options, last_menu = mostrar_menu_inicio()
+            evaluator, data = user_request(valid_options, last_menu, cleaned_data)
+    except (KeyboardInterrupt, EOFError):
+        print("\nPrograma interrumpido por el usuario.")
 
 if __name__ == "__main__":
     main()
