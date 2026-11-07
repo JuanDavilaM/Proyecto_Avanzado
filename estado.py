@@ -61,10 +61,13 @@ def tabla_historial(historial):
         return ["  (todavía no se ha ejecutado nada: usa la opción 3)"]
     lineas = [f"{'tanda':>5}{'id':>4}  {'tipo':<7}{'N':>5}{'mejor valor':>13}"
               f"{'gen. óptimo':>13}{'hasta óptimo':>15}{'tiempo total':>15}"]
+    lineas = [f"{'tanda':>5}{'id':>6}  {'tipo':<7}{'N':>5}{'mejor valor':>13}"
+          f"{'gen. óptimo':>13}{'hasta óptimo':>15}{'tiempo total':>15}"]
     for numero_tanda, tanda in enumerate(historial, start=1):
         for r in tanda:
-            inicio = (f"{numero_tanda:>5}{_texto(r.get('id')):>4}  {_texto(r.get('tipo')):<7}"
-                      f"{_texto(_tamano(r.get('configuracion', {}))):>5}")
+            id_visible = f"{numero_tanda}.{_texto(r.get('id'))}"
+            inicio = (f"{numero_tanda:>5}{id_visible:>6}  {_texto(r.get('tipo')):<7}"
+                    f"{_texto(_tamano(r.get('configuracion', {}))):>5}")
             if "error" in r:
                 lineas.append(f"{inicio}  ERROR: {r['error']}")
             else:
