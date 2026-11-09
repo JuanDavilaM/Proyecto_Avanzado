@@ -70,6 +70,9 @@ def construir_ejecuciones(data):
     ejecuciones = []
     for config in individualizar_problemas(problemas_onemax):
         config["tipo"] = "onemax"
+        longitud = config.get("longitud_gen")
+        if "optimo_conocido" not in config and isinstance(longitud, int) and not isinstance(longitud, bool):
+            config["optimo_conocido"] = longitud
         ejecuciones.append(config)
     for config in individualizar_problemas(problemas_tsp):
         config["tipo"] = "tsp"
