@@ -116,7 +116,17 @@ def dibujar_grafico(puntos, ruta):
     plt.close()
     return dibujado
 
-# Exporta los resultados y genera el gráfico si está configurado.
+def preguntar_si_no(pregunta):
+    """Repite la pregunta hasta que el usuario responda Si o No."""
+    while True:
+        respuesta = input(f"{pregunta} (Si/No): ").strip().lower()
+        if respuesta in ("si", "sí", "s"):
+            return True
+        if respuesta in ("no", "n"):
+            return False
+        print("Responde Si o No.")
+
+
 def exportar_resultados(cleaned_data):
     historial = cleaned_data.get("historial", [])
     if not historial:
@@ -124,9 +134,15 @@ def exportar_resultados(cleaned_data):
         return
 
     salida = cleaned_data.get("salida")
-    if not isinstance(salida, dict) or "guardar_en" not in salida:
-        print("El archivo cargado no configura una salida (guardar_en), no hay dónde exportar.")
-        return
+    if not isinstance(salida, dict):
+        salida = {}
+
+    if "guardar_en" not in salida:
+        print("No hay salida declarada en el último archivo cargado.")
+        if not preguntar_si_no("¿Desea exportarlo en resultados.json?"):
+            print("No se exporta nada.")
+            return
+        salida = {**salida, "guardar_en": "resultados.json"}
 
     ruta = salida["guardar_en"]
     try:
