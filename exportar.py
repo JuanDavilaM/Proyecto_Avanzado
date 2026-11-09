@@ -18,29 +18,32 @@ def obtener_resultados(historial):
 
 def guardar_resultados(historial, tiempos, ruta):
     """Escribe en un único JSON la configuración, el resultado y el tiempo de cada ejecución.
+    El id se guarda como tanda.id (por ejemplo "2.1") para que no se repita entre tandas.
     Devuelve cuántas ejecuciones se han guardado."""
     ejecuciones = []
-    for r in obtener_resultados(historial):
-        if "error" in r:
-            ejecuciones.append({
-                "id": r.get("id"),
-                "tipo": r.get("tipo"),
-                "configuracion": r.get("configuracion"),
-                "error": r["error"],
-            })
-        else:
-            ejecuciones.append({
-                "id": r["id"],
-                "tipo": r["tipo"],
-                "configuracion": r["configuracion"],
-                "mejor_valor": r["mejor_valor"],
-                "mejor_individuo": r["mejor_individuo"],
-                "generacion_optimo": r["generacion_optimo"],
-                "tiempo_total": r["tiempo_total"],
-                "segundos_totales": r["segundos_totales"],
-                "tiempo_hasta_optimo": r["tiempo_hasta_optimo"],
-                "segundos_hasta_optimo": r["segundos_hasta_optimo"],
-            })
+    for numero_tanda, tanda in enumerate(historial, start=1):
+        for r in tanda:
+            id_visible = f"{numero_tanda}.{r.get('id')}"
+            if "error" in r:
+                ejecuciones.append({
+                    "id": id_visible,
+                    "tipo": r.get("tipo"),
+                    "configuracion": r.get("configuracion"),
+                    "error": r["error"],
+                })
+            else:
+                ejecuciones.append({
+                    "id": id_visible,
+                    "tipo": r["tipo"],
+                    "configuracion": r["configuracion"],
+                    "mejor_valor": r["mejor_valor"],
+                    "mejor_individuo": r["mejor_individuo"],
+                    "generacion_optimo": r["generacion_optimo"],
+                    "tiempo_total": r["tiempo_total"],
+                    "segundos_totales": r["segundos_totales"],
+                    "tiempo_hasta_optimo": r["tiempo_hasta_optimo"],
+                    "segundos_hasta_optimo": r["segundos_hasta_optimo"],
+                })
 
     tiempo_conjunto = sum(tiempos)
     datos = {
