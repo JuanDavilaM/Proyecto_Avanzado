@@ -1,6 +1,7 @@
 """Opción 4 del menú: resumen del estado de la sesión y tablas de texto
 con las ejecuciones cargadas y el historial de resultados."""
 
+import pandas as pd
 
 def conocer_cuantos_problemas_cargados(cleaned_data):
     """Número de ejecuciones cargadas: total, OneMax y TSP."""
@@ -41,34 +42,50 @@ def _texto(valor):
         return f"{valor:.2f}"
     return str(valor)
 
+def df_ejecuciones_cargadas(ejecuciones):
+    """DataFrame con los parámetros de cada ejecución cargada."""
 
-def tabla_ejecuciones_cargadas(ejecuciones):
-    """Líneas de texto con los parámetros de cada ejecución cargada."""
-    if not ejecuciones:
-        return ["  (no hay ejecuciones cargadas)"]
-    lineas = [f"{'id':>4}  {'tipo':<7}{'N':>5}{'población':>11}{'generaciones':>14}{'mutación':>10}{'óptimo':>9}"]
+    COLUMNAS_CARGADAS = ["id", "tipo", "N", "población", "generaciones", "mutación", "óptimo"]
+
+    filas = []
     for e in ejecuciones:
-        lineas.append(
-            f"{_texto(e.get('id')):>4}  {_texto(e.get('tipo')):<7}{_texto(_tamano(e)):>5}"
-            f"{_texto(e.get('tamano_poblacion')):>11}{_texto(e.get('num_generaciones')):>14}"
-            f"{_texto(e.get('tasa_mutacion')):>10}{_texto(e.get('optimo_conocido')):>9}")
-    return lineas
+        filas.append([_texto(e.get("id")), _texto(e.get("tipo")), _texto(_tamano(e)),
+                      _texto(e.get("tamano_poblacion")), _texto(e.get("num_generaciones")),
+                      _texto(e.get("tasa_mutacion")), _texto(e.get("optimo_conocido"))])
+    return pd.DataFrame(filas, columns=COLUMNAS_CARGADAS)
 
 
-def tabla_historial(historial):
-    """Líneas de texto con el resultado y los tiempos de cada ejecución hecha, por tandas."""
-    if not historial:
-        return ["  (todavía no se ha ejecutado nada: usa la opción 3)"]
-    lineas = [f"{'tanda':>5}{'id':>4}  {'tipo':<7}{'N':>5}{'mejor valor':>13}"
-              f"{'gen. óptimo':>13}{'hasta óptimo':>15}{'tiempo total':>15}"]
+def mostrar_ejecuciones_cargadas(ejecuciones):
+    if not ejecuciones:
+        print("  (no hay ejecuciones cargadas)")
+        return
+    print(df_ejecuciones_cargadas(ejecuciones).to_string(index=False))
+
+
+def df_historial(historial):
+
+    COLUMNAS_HISTORIAL = ["tanda", "id", "tipo", "N", "mejor valor", "gen. óptimo",
+                      "hasta óptimo", "tiempo total", "mejor individuo (TSP)"]
+    
+    """DataFrame con una fila por ejecución hecha, en el orden de las tandas."""
+    filas = []
     for numero_tanda, tanda in enumerate(historial, start=1):
         for r in tanda:
-            inicio = (f"{numero_tanda:>5}{_texto(r.get('id')):>4}  {_texto(r.get('tipo')):<7}"
-                      f"{_texto(_tamano(r.get('configuracion', {}))):>5}")
+            fila = [numero_tanda, f"{numero_tanda}.{_texto(r.get('id'))}", _texto(r.get("tipo")),
+                    _texto(_tamano(r.get("configuracion", {})))]
             if "error" in r:
-                lineas.append(f"{inicio}  ERROR: {r['error']}")
+                fila += ["-", "-", "-", "-", f"ERROR: {r['error']}"]
             else:
-                lineas.append(
-                    f"{inicio}{_texto(r.get('mejor_valor')):>13}{_texto(r.get('generacion_optimo')):>13}"
-                    f"{_texto(r.get('tiempo_hasta_optimo')):>15}{_texto(r.get('tiempo_total')):>15}")
-    return lineas
+                individuo = r.get("mejor_individuo") if r.get("tipo") == "tsp" else None
+                fila += [_texto(r.get("mejor_valor")), _texto(r.get("generacion_optimo")),
+                         _texto(r.get("tiempo_hasta_optimo")), _texto(r.get("tiempo_total")),
+                         _texto(individuo)]
+            filas.append(fila)
+    return pd.DataFrame(filas, columns=COLUMNAS_HISTORIAL)
+
+
+def mostrar_historial(historial):
+    if not historial:
+        print("  (todavía no se ha ejecutado nada: usa la opción 3)")
+        return
+    print(df_historial(historial).to_string(index=False, max_colwidth=40))

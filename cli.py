@@ -4,7 +4,8 @@ import time
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
 from ejecucion import formatear_tiempo
-from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos, conocer_tiempo_real_ejecucion, tabla_ejecuciones_cargadas, tabla_historial)
+from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos, 
+                    conocer_tiempo_real_ejecucion, mostrar_ejecuciones_cargadas, mostrar_historial)
 from exportar import exportar_resultados
 
 ### MENÚS ###
@@ -134,13 +135,11 @@ def mostrar_menu_consultar_estado(cleaned_data):
 
     print()
     print("--- Ejecuciones cargadas ---")
-    for linea in tabla_ejecuciones_cargadas(ejecuciones):
-        print(linea)
+    mostrar_ejecuciones_cargadas(ejecuciones)
 
     print()
     print("--- Historial de resultados ---")
-    for linea in tabla_historial(historial):
-        print(linea)
+    mostrar_historial(historial)
 
 def user_request(valid_options, last_menu, cleaned_data):
     """Lee una opción del menú y la ejecuta.
