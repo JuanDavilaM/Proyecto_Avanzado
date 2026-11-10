@@ -65,6 +65,7 @@ Ejemplo rápido: `1` → `ejemplos/ejemplo_completo.json` → `3` → `4` → `5
 ```
 
 `problemas_onemax` y `problemas_tsp` admiten un problema o una lista. Si `tamano_poblacion`, `num_generaciones` o `tasa_mutacion` son una lista, se ejecuta cada combinación (rejilla): el segundo problema de arriba genera 2 × 3 = 6 ejecuciones.
+`semilla` también admite una lista: `"semilla": [1, 2, 3, 4]` lanza el mismo problema con cuatro semillas distintas, que se resuelven en paralelo; así se puede quedar el mejor resultado.
 
 ### Claves de cada problema
 
@@ -80,7 +81,7 @@ Ejemplo rápido: `1` → `ejemplos/ejemplo_completo.json` → `3` → `4` → `5
 | `num_busqueda_local` | No | Hijos mejorados con 2-opt por generación en el memético (3 por defecto) |
 | `num_elites` | No | Mejores individuos que pasan intactos a la siguiente generación (1 por defecto) |
 | `tamano_torneo` | No | Participantes de cada torneo de selección (2 por defecto) |
-| `semilla` | No | Semilla aleatoria (por defecto, el id de la ejecución) |
+| `semilla` | No | Entero, o lista para lanzar el mismo problema con varias semillas en paralelo (por defecto, el id de la ejecución) |
 
 `salida` y `num_nucleos` son opcionales. Si `num_nucleos` supera los núcleos de la máquina, se usan todos y se avisa.
 
