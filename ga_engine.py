@@ -43,11 +43,10 @@ def optimo_alcanzado(fitness, fitness_objetivo, tolerancia=1e-4):
     return fitness >= fitness_objetivo - tolerancia * abs(fitness_objetivo)
 
 def run_genetic_algorithm(tamano_poblacion, tamano_individuo, num_generaciones, tasa_mutacion,
-                          generador, fitness, cruce, mutacion, *args,
+                          generador, fitness, cruce, mutacion, *args, 
                           fitness_objetivo=None, semilla=None, tamano_torneo=2, num_elites=1,
-                          busqueda_local=None, num_busqueda_local=0):
+                          busqueda_local=None, num_busqueda_local=0, parar_en_optimo=True):
     """Ejecuta el algoritmo genético y devuelve un diccionario con los resultados.
-
     generador, fitness, cruce, mutacion: funciones del problema (ver problemas.py).
     *args: datos extra del problema que se reenvían a la fitness (matriz de distancias en TSP).
     fitness_objetivo: fitness del óptimo conocido, para medir cuándo se alcanza (None si no hay).
@@ -55,7 +54,7 @@ def run_genetic_algorithm(tamano_poblacion, tamano_individuo, num_generaciones, 
     busqueda_local: función opcional que mejora un individuo (busqueda_local(individuo, *args));
     si se indica, el algoritmo es memético.
     num_busqueda_local: cuántos hijos de cada generación, elegidos al azar, se mejoran con ella.
-    """
+    parar_en_optimo: si es True, el algoritmo termina en cuanto alcanza fitness_objetivo."""
     if semilla is not None:
         random.seed(semilla)
     inicio = time.perf_counter()
@@ -73,6 +72,8 @@ def run_genetic_algorithm(tamano_poblacion, tamano_individuo, num_generaciones, 
     if optimo_alcanzado(mejor_fitness, fitness_objetivo):
         generacion_optimo = 0
         segundos_hasta_optimo = time.perf_counter() - inicio
+        if parar_en_optimo:
+            num_generaciones = 0
 
     for generacion in range(1, num_generaciones + 1):
         elites = seleccionar_elites(poblacion, fitnesses, num_elites)
@@ -108,6 +109,8 @@ def run_genetic_algorithm(tamano_poblacion, tamano_individuo, num_generaciones, 
         if generacion_optimo is None and optimo_alcanzado(mejor_fitness, fitness_objetivo):
             generacion_optimo = generacion
             segundos_hasta_optimo = time.perf_counter() - inicio
+        if parar_en_optimo and generacion_optimo is not None:
+            break
 
     return {
         "mejor_individuo": mejor_individuo,

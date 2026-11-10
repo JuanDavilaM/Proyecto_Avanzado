@@ -18,29 +18,32 @@ def obtener_resultados(historial):
 
 def guardar_resultados(historial, tiempos, ruta):
     """Escribe en un único JSON la configuración, el resultado y el tiempo de cada ejecución.
+    El id se guarda como tanda.id (por ejemplo "2.1") para que no se repita entre tandas.
     Devuelve cuántas ejecuciones se han guardado."""
     ejecuciones = []
-    for r in obtener_resultados(historial):
-        if "error" in r:
-            ejecuciones.append({
-                "id": r.get("id"),
-                "tipo": r.get("tipo"),
-                "configuracion": r.get("configuracion"),
-                "error": r["error"],
-            })
-        else:
-            ejecuciones.append({
-                "id": r["id"],
-                "tipo": r["tipo"],
-                "configuracion": r["configuracion"],
-                "mejor_valor": r["mejor_valor"],
-                "mejor_individuo": r["mejor_individuo"],
-                "generacion_optimo": r["generacion_optimo"],
-                "tiempo_total": r["tiempo_total"],
-                "segundos_totales": r["segundos_totales"],
-                "tiempo_hasta_optimo": r["tiempo_hasta_optimo"],
-                "segundos_hasta_optimo": r["segundos_hasta_optimo"],
-            })
+    for numero_tanda, tanda in enumerate(historial, start=1):
+        for r in tanda:
+            id_visible = f"{numero_tanda}.{r.get('id')}"
+            if "error" in r:
+                ejecuciones.append({
+                    "id": id_visible,
+                    "tipo": r.get("tipo"),
+                    "configuracion": r.get("configuracion"),
+                    "error": r["error"],
+                })
+            else:
+                ejecuciones.append({
+                    "id": id_visible,
+                    "tipo": r["tipo"],
+                    "configuracion": r["configuracion"],
+                    "mejor_valor": r["mejor_valor"],
+                    "mejor_individuo": r["mejor_individuo"],
+                    "generacion_optimo": r["generacion_optimo"],
+                    "tiempo_total": r["tiempo_total"],
+                    "segundos_totales": r["segundos_totales"],
+                    "tiempo_hasta_optimo": r["tiempo_hasta_optimo"],
+                    "segundos_hasta_optimo": r["segundos_hasta_optimo"],
+                })
 
     tiempo_conjunto = sum(tiempos)
     datos = {
@@ -116,7 +119,17 @@ def dibujar_grafico(puntos, ruta):
     plt.close()
     return dibujado
 
-# Exporta los resultados y genera el gráfico si está configurado.
+def preguntar_si_no(pregunta):
+    """Repite la pregunta hasta que el usuario responda Si o No."""
+    while True:
+        respuesta = input(f"{pregunta} (Si/No): ").strip().lower()
+        if respuesta in ("si", "sí", "s"):
+            return True
+        if respuesta in ("no", "n"):
+            return False
+        print("Responde Si o No.")
+
+
 def exportar_resultados(cleaned_data):
     historial = cleaned_data.get("historial", [])
     if not historial:
@@ -124,9 +137,15 @@ def exportar_resultados(cleaned_data):
         return
 
     salida = cleaned_data.get("salida")
-    if not isinstance(salida, dict) or "guardar_en" not in salida:
-        print("El archivo cargado no configura una salida (guardar_en), no hay dónde exportar.")
-        return
+    if not isinstance(salida, dict):
+        salida = {}
+
+    if "guardar_en" not in salida:
+        print("No hay salida declarada en el último archivo cargado.")
+        if not preguntar_si_no("¿Desea exportarlo en resultados.json?"):
+            print("No se exporta nada.")
+            return
+        salida = {**salida, "guardar_en": "resultados.json"}
 
     ruta = salida["guardar_en"]
     try:

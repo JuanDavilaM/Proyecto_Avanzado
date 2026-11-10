@@ -40,3 +40,12 @@ Cuando varias ejecuciones tienen el mismo N, se dibuja la media de sus tiempos. 
 
 ## 10. Exportar resultados
 El JSON guarda la configuración, el resultado y los tiempos de cada ejecución, más el tiempo total. matplotlib solo se carga al dibujar el gráfico: si falta, el programa avisa y sigue funcionando.
+
+## 11. Qué claves admiten rejilla de hiperparámetros
+- **Decisión:** solo `tamano_poblacion`, `num_generaciones` y `tasa_mutacion` se expanden cuando vienen como lista. Cualquier otra lista se conserva entera.
+- **Motivo:** la §4.2 dice que la rejilla afecta solo a los hiperparámetros del solucionador y que `longitud_gen` y `ciudades` "se mantienen fijos". Así, un dato nuevo en forma de lista (por ejemplo, en el JSON del hackathon) no multiplica las ejecuciones.
+- **Consecuencia:** si `longitud_gen` u `optimo_conocido` llegan como lista, la ejecución se rechaza con un mensaje de validación claro. Para resolver varios tamaños hay que escribir varios problemas en la lista (`problemas_onemax: [ {...}, {...} ]`), que es lo que indica la §4.1.
+
+## 12. Validación de tipos
+- **Decisión:** cada ejecución se valida antes de resolverla (tipos y rangos). `true`/`false` no se aceptan como números aunque en Python `bool` sea subclase de `int`.
+- **Motivo:** el programa no debe fallar ante un JSON incorrecto, y el mensaje debe decir qué valor hay que corregir. Una ejecución inválida queda registrada con su error y no impide que se resuelvan las demás.

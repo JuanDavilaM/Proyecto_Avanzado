@@ -1,11 +1,11 @@
 import json
 import time
-import pandas as pd
 
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
 from ejecucion import formatear_tiempo
-from visualizacion import *
+from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos, 
+                    conocer_tiempo_real_ejecucion, mostrar_ejecuciones_cargadas, mostrar_historial)
 from exportar import exportar_resultados
 
 ### MENÚS ###
@@ -111,71 +111,79 @@ def mostrar_menu_ejecutar(cleaned_data):
     return cleaned_data["historial"]
 
 def mostrar_menu_consultar_estado(cleaned_data):
+    """Opción 4: muestra todo lo que mantiene el programa (§9): archivo, núcleos,
+    ejecuciones cargadas con sus parámetros e historial de resultados con sus tiempos."""
+    ejecuciones = cleaned_data.get("ejecuciones", [])
+    historial = cleaned_data.get("historial", [])
+    if not ejecuciones and not historial:
+        print("Todavía no hay nada cargado: usa la opción 1 para cargar un archivo de problemas.")
+        return
 
-    if cleaned_data == {}:
-        return print("Datos no cargados todavía, redirigiendo al menú principal")
-
-    last_menu = "consultar estado"
-
-    problemas_totales, problemas_onemax, problemas_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
-    problemas_resueltos = conocer_cuantos_problemas_resueltos(cleaned_data)
-    suma_segundos_real = conocer_tiempo_real_ejecucion(cleaned_data)
-
-    registro = conocer_registro_resultados(cleaned_data)
+    total, n_onemax, n_tsp = conocer_cuantos_problemas_cargados(cleaned_data)
+    resueltos = conocer_cuantos_problemas_resueltos(cleaned_data)
+    hechas = sum(len(tanda) for tanda in historial)
+    tiempo_real = conocer_tiempo_real_ejecucion(cleaned_data)
 
     print()
-    print(f"Problemas totales cargados ahora mismo: {problemas_totales}")
-    print(f"Problemas \"one max\" cargados ahora mismo: {problemas_onemax}")
-    print(f"Problemas \"tsp\" cargados ahora mismo: {problemas_tsp}")
-    print(f"Total de problemas resueltos en esta sesión: {problemas_resueltos}")
-    print(f"Tiempo total de ejecución de problemas: {formatear_tiempo(suma_segundos_real)}")
-    if registro:
-        print("Registro de resultados:")
-        print(pd.DataFrame(registro).to_string(index=False))
+    print("========== ESTADO DE LA SESIÓN ==========")
+    print(f"Archivo cargado:      {cleaned_data.get('archivo', '-')}")
+    print(f"Núcleos en uso:       {cleaned_data.get('num_nucleos', 1)} (disponibles: {nucleos_disponibles()})")
+    print(f"Ejecuciones cargadas: {total} ({n_onemax} OneMax, {n_tsp} TSP)")
+    print(f"Ejecuciones hechas:   {hechas} en {len(historial)} tanda(s): "
+          f"{resueltos} correctas, {hechas - resueltos} con error")
+    print(f"Tiempo real total:    {formatear_tiempo(tiempo_real)}")
+
+    print()
+    print("--- Ejecuciones cargadas ---")
+    mostrar_ejecuciones_cargadas(ejecuciones)
+
+    print()
+    print("--- Historial de resultados ---")
+    mostrar_historial(historial)
 
 def user_request(valid_options, last_menu, cleaned_data):
-
-    try: 
+    """Lee una opción del menú y la ejecuta.
+    Devuelve (False, None) solo cuando el usuario quiere salir; en cualquier otro caso (True, None)."""
+    try:
         comando = int(input("Introduce un comando válido: "))
-
-        if comando not in valid_options:
-            print("Comando no válido, introduzca comando válido")
-            return True, None
-        elif comando in valid_options:
-            if comando == 1 and last_menu == "inicio":
-                mostrar_menu_cargar_json(cleaned_data)
-                return True, None
-            elif comando == 2 and last_menu == "inicio":
-                mostrar_menu_parametros_ejecucion(cleaned_data)
-                return True, None
-            elif comando == 3 and last_menu == "inicio":
-                mostrar_menu_ejecutar(cleaned_data)
-                return True, None
-            elif comando == 4 and last_menu == "inicio":
-                mostrar_menu_consultar_estado(cleaned_data)
-                return True, None
-            elif comando == 5 and last_menu == "inicio":
-                exportar_resultados(cleaned_data)
-                return True, None
-            elif comando == 6 and last_menu == "inicio":
-                print("Programa Finalizado")
-                return False, None
-            else:
-                print("Opción todavía no disponible")
-                return True, None
-    except:
-        print("ERROR, volviendo al último menú...")
+    except ValueError:
+        print("Comando no válido: escribe un número del 1 al 6.")
         return True, None
+
+    if comando not in valid_options:
+        print("Comando no válido: escribe un número del 1 al 6.")
+        return True, None
+
+    if comando == 6:
+        print("Programa Finalizado")
+        return False, None
+
+    try:
+        if comando == 1:
+            mostrar_menu_cargar_json(cleaned_data)
+        elif comando == 2:
+            mostrar_menu_parametros_ejecucion(cleaned_data)
+        elif comando == 3:
+            mostrar_menu_ejecutar(cleaned_data)
+        elif comando == 4:
+            mostrar_menu_consultar_estado(cleaned_data)
+        elif comando == 5:
+            exportar_resultados(cleaned_data)
+    except Exception as error:
+        print(f"Error inesperado en la opción {comando} ({type(error).__name__}: {error}). Volviendo al menú.")
+    return True, None
 
 def main():
     """Bucle principal del programa: muestra el menú hasta que el usuario sale."""
     evaluator = True
     cleaned_data = {}
 
-    while evaluator:
-        valid_options, last_menu = mostrar_menu_inicio()
-        evaluator, data = user_request(valid_options, last_menu, cleaned_data)
-
+    try:
+        while evaluator:
+            valid_options, last_menu = mostrar_menu_inicio()
+            evaluator, data = user_request(valid_options, last_menu, cleaned_data)
+    except (KeyboardInterrupt, EOFError):
+        print("\nPrograma interrumpido por el usuario.")
 
 if __name__ == "__main__":
     main()
