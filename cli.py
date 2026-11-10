@@ -92,21 +92,24 @@ def mostrar_menu_cargar_json(cleaned_data):
     print(f"Cargadas {len(ejecuciones)} ejecuciones ({n_onemax} OneMax, {n_tsp} TSP). Núcleos: {num_nucleos}.")
 
 def mostrar_menu_ejecutar(cleaned_data):
-
+    """Opción 3: resuelve en paralelo todas las ejecuciones cargadas y guarda sus
+    resultados como una tanda nueva del historial, junto con su tiempo real."""
     ejecuciones = cleaned_data.get("ejecuciones", [])
+    if not ejecuciones:
+        print("No hay ejecuciones cargadas: usa la opción 1 para cargar un archivo de problemas.")
+        return
 
-    if ejecuciones == []:
-        print("No hay datos cargados, asegurate de cargar un .json")
-        return []
-
-    print("Ejecutando...")
+    print(f"Ejecutando {len(ejecuciones)} ejecuciones con {cleaned_data['num_nucleos']} núcleo(s)...")
     inicio = time.perf_counter()
-    cleaned_data["historial"].append(ejecutar_en_paralelo(cleaned_data))
-    cleaned_data["tiempos_tanda"].append(time.perf_counter() - inicio)
-    del cleaned_data["ejecuciones"]
-    print("Proceso Finalizado")
+    resultados = ejecutar_en_paralelo(cleaned_data)
+    segundos = time.perf_counter() - inicio
 
-    return cleaned_data["historial"]
+    cleaned_data["historial"].append(resultados)
+    cleaned_data["tiempos_tanda"].append(segundos)
+
+    errores = sum(1 for r in resultados if "error" in r)
+    print(f"Tanda {len(cleaned_data['historial'])} terminada en {formatear_tiempo(segundos)}: "
+          f"{len(resultados) - errores} correctas, {errores} con error. Detalles en la opción 4.")
 
 def mostrar_menu_consultar_estado(cleaned_data):
     """Opción 4: muestra todo lo que mantiene el programa (§9): archivo, núcleos,
