@@ -73,6 +73,7 @@ El JSON guarda la configuración, el resultado y los tiempos de cada ejecución,
 ## 18. Semilla
 - **Decisión:** por defecto, el id de la ejecución, fijada dentro de cada ejecución (configurable con `semilla`).
 - **Motivo:** con multiprocessing en Windows cada proceso reimporta los módulos; una semilla global daría resultados idénticos. Es reproducible en la misma versión de Python.
+- **Varias semillas:** `semilla` admite una lista y se expande como la rejilla, para lanzar el mismo problema con varias semillas en paralelo y quedarse con el mejor resultado (extensión propia de la §4.2).
 
 ## 19. Funcionalidad original: a qué individuos se aplica 2-opt
 - **Decisión:** a 3 hijos elegidos al azar en cada generación (`num_busqueda_local`).

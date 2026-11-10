@@ -41,9 +41,9 @@ def separar_problemas(data):
 
 def individualizar_problemas(problemas):
     """Expande cada problema en una ejecución por combinación de hiperparámetros.
-    Solo los hiperparámetros del solucionador pueden darse como lista (§4.2);
+    Solo los hiperparámetros del solucionador (§4.2) y la semilla pueden darse como lista;;
     cualquier otra lista (ciudades, datos nuevos del problema) se conserva entera."""
-    claves_rejilla = ("tamano_poblacion", "num_generaciones", "tasa_mutacion")
+    claves_rejilla = ("tamano_poblacion", "num_generaciones", "tasa_mutacion", "semilla")
     resultado = []
     for problema in problemas:
         combinaciones = [{}]
