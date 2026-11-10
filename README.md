@@ -26,8 +26,8 @@ python cli.py
 |---|---|
 | 1. Cargar archivo de problemas | Lee un JSON, lo expande en ejecuciones individuales y borra el historial anterior |
 | 2. Ajustar parámetros de ejecución | Cambia el número de núcleos de la sesión sin editar el JSON |
-| 3. Ejecutar todo | Resuelve todas las ejecuciones cargadas en paralelo (una *tanda*) |
-| 4. Consultar estado | Archivo, núcleos, ejecuciones cargadas y su configuración, e historial con resultados y tiempos |
+| 3. Ejecutar todo | Resuelve en paralelo las ejecuciones pendientes (una *tanda*); si ya están hechas, pregunta si repetirlas |
+| 4. Consultar estado | Archivo, núcleos, ejecuciones cargadas y pendientes con su configuración, e historial con resultados y tiempos |
 | 5. Exportar resultados | Guarda el historial en JSON y, si se pide, el gráfico de rendimiento |
 | 6. Salir | Termina el programa (también con Ctrl+C) |
 
