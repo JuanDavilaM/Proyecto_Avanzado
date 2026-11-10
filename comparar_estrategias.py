@@ -1,7 +1,6 @@
-"""Funcionalidad original: compara el GA básico con el GA memético (GA + 2-opt)
-en instancias TSP aleatorias y dibuja la convergencia de ambos.
+"""Compara el GA básico con el memético en un TSP aleatorio.
 
-Uso: python comparar_estrategias.py [num_ciudades]   (por defecto, 100)"""
+Uso: python comparar_estrategias.py [num_ciudades]"""
 
 import random
 import sys
@@ -34,8 +33,7 @@ def resolver(matriz, num_ciudades, semilla, memetico, poblacion=100, generacione
 
 
 def comparar(num_ciudades, semillas):
-    """Resuelve la misma instancia con las dos estrategias y varias semillas.
-    Devuelve, por estrategia, la lista de distancias, de tiempos y de evoluciones."""
+    """Resuelve la misma instancia con las dos estrategias y varias semillas."""
     matriz = problemas.matriz_distancias(generar_ciudades(num_ciudades, semilla=num_ciudades))
     resultados = {}
     for nombre, memetico in (("GA básico", False), ("GA memético (2-opt)", True)):
@@ -82,6 +80,7 @@ def dibujar_convergencia(resultados, num_ciudades, ruta):
 
 
 def main():
+    """Lee el número de ciudades de la terminal, compara las dos estrategias y dibuja la convergencia."""
     num_ciudades = 100
     if len(sys.argv) > 1:
         try:

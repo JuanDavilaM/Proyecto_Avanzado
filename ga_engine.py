@@ -1,6 +1,4 @@
-"""Motor genérico del algoritmo genético.
-No conoce el problema: recibe como argumentos las funciones de generación,
-fitness, cruce y mutación, y los datos extra del problema mediante *args."""
+"""Motor genérico del algoritmo genético: recibe las funciones del problema y sus datos por *args."""
 
 import random
 import time
@@ -10,16 +8,14 @@ def generar_poblacion(tamano_poblacion, generador, tamano_individuo):
     """Crea la población inicial llamando al generador recibido."""
     return [generador(tamano_individuo) for _ in range(tamano_poblacion)]
 
+
 def evaluar_poblacion(poblacion, fitness, *args):
-    """Calcula la fitness de cada individuo.
-    *args son los datos extra del problema (para TSP, la matriz de distancias)
-    y se reenvían tal cual a la función de fitness."""
+    """Fitness de cada individuo; *args se pasa tal cual a la función de fitness."""
     return [fitness(individuo, *args) for individuo in poblacion]
 
+
 def seleccion_torneo(poblacion, fitnesses, tamano_torneo=2):
-    """Elige tantos padres como individuos tiene la población.
-    En cada torneo se escogen al azar 'tamano_torneo' individuos distintos
-    y gana el de mayor fitness."""
+    """Selección por torneo: en cada torneo gana el mejor de tamano_torneo individuos al azar."""
     padres = []
     k = min(tamano_torneo, len(poblacion))
     for _ in range(len(poblacion)):
@@ -28,33 +24,28 @@ def seleccion_torneo(poblacion, fitnesses, tamano_torneo=2):
         padres.append(poblacion[ganador])
     return padres
 
+
 def seleccionar_elites(poblacion, fitnesses, num_elites):
-    """Copias de los 'num_elites' mejores individuos, que pasan intactos
-    a la siguiente generación (elitismo)."""
+    """Copias de los num_elites mejores individuos."""
     orden = sorted(range(len(poblacion)), key=lambda i: fitnesses[i], reverse=True)
     return [poblacion[i][:] for i in orden[:num_elites]]
 
 
 def optimo_alcanzado(fitness, fitness_objetivo, tolerancia=1e-4):
-    """True si la fitness alcanza el objetivo, con una pequeña tolerancia relativa.
-    Si no hay objetivo (None), nunca se considera alcanzado."""
+    """True si la fitness llega al objetivo, con una tolerancia relativa."""
     if fitness_objetivo is None:
         return False
     return fitness >= fitness_objetivo - tolerancia * abs(fitness_objetivo)
 
+
 def run_genetic_algorithm(tamano_poblacion, tamano_individuo, num_generaciones, tasa_mutacion,
-                          generador, fitness, cruce, mutacion, *args, 
+                          generador, fitness, cruce, mutacion, *args,
                           fitness_objetivo=None, semilla=None, tamano_torneo=2, num_elites=1,
                           busqueda_local=None, num_busqueda_local=0, parar_en_optimo=True):
     """Ejecuta el algoritmo genético y devuelve un diccionario con los resultados.
-    generador, fitness, cruce, mutacion: funciones del problema (ver problemas.py).
-    *args: datos extra del problema que se reenvían a la fitness (matriz de distancias en TSP).
-    fitness_objetivo: fitness del óptimo conocido, para medir cuándo se alcanza (None si no hay).
-    semilla: fija los números aleatorios para que la ejecución sea reproducible.
-    busqueda_local: función opcional que mejora un individuo (busqueda_local(individuo, *args));
-    si se indica, el algoritmo es memético.
-    num_busqueda_local: cuántos hijos de cada generación, elegidos al azar, se mejoran con ella.
-    parar_en_optimo: si es True, el algoritmo termina en cuanto alcanza fitness_objetivo."""
+    *args: datos del problema que se pasan a la fitness (en TSP, la matriz).
+    fitness_objetivo: fitness del óptimo conocido, o None.
+    busqueda_local: función opcional para mejorar hijos (algoritmo memético)."""
     if semilla is not None:
         random.seed(semilla)
     inicio = time.perf_counter()

@@ -13,6 +13,7 @@ def probar(descripcion, ejecucion):
 
 
 def main():
+    """Prueba ejecuciones correctas e incorrectas, cambiando una sola clave cada vez."""
     onemax = {"tipo": "onemax", "tamano_poblacion": 10, "num_generaciones": 5,
               "tasa_mutacion": 0.1, "longitud_gen": 8}
     tsp = {"tipo": "tsp", "tamano_poblacion": 10, "num_generaciones": 5,

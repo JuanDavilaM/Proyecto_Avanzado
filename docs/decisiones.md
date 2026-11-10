@@ -102,3 +102,12 @@ El JSON guarda la configuración, el resultado y los tiempos de cada ejecución,
 ## 25. Exportar sin salida declarada
 - **Decisión:** si el archivo cargado no trae `salida.guardar_en`, la opción 5 pregunta si exportar en `resultados.json`.
 - **Motivo:** el usuario puede guardar sus resultados aunque el JSON no lo indique, sin tener que editarlo.
+
+## 26. Ejecuciones pendientes
+- **Ambigüedad:** la opción 3 debe ejecutar "las ejecuciones pendientes" (§9), pero el programa debe permitir "ejecutarlo tantas veces como sea necesario" (§2).
+- **Decisión:** al cargar un archivo, todas sus ejecuciones quedan pendientes. La opción 3 resuelve las pendientes y, si ya no queda ninguna, pregunta si repetirlas en una tanda nueva.
+- **Motivo:** cumple las dos lecturas. El estado muestra cuántas hay cargadas, cuántas pendientes y los resultados guardados por tandas.
+
+## 27. Repetir una tanda
+- **Decisión:** una tanda repetida usa las mismas semillas, así que da los mismos resultados; solo cambian los tiempos.
+- **Motivo:** los resultados son reproducibles. Para obtener resultados distintos se cambia `semilla` en el JSON, que admite una lista para lanzar varias a la vez.

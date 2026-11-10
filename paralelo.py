@@ -1,5 +1,4 @@
-"""Ejecución en paralelo de las ejecuciones del algoritmo genético
-y utilidades relacionadas con los núcleos de la máquina."""
+"""Núcleos disponibles y ejecución en paralelo con multiprocessing."""
 
 import os
 import multiprocessing
@@ -21,6 +20,7 @@ def validar_num_nucleos(valor):
     if 1 <= n <= nucleos_disponibles():
         return n
     return None
+
 
 def ejecutar_en_paralelo(cleaned_data):
     """Lanza las ejecuciones cargadas repartidas entre varios procesos."""

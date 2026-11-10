@@ -1,4 +1,4 @@
-#Opción 5 de menu:exportar los resultados a un json y el gráfico de rendimiento.
+"""Opción 5 del menú: exportar los resultados a un JSON y dibujar el gráfico de rendimiento."""
 
 import json
 import os
@@ -7,8 +7,7 @@ from ejecucion import formatear_tiempo
 
 
 def obtener_resultados(historial):
-    """El historial es una lista de vueltas (una por cada vez que se ejecuta la opción 3);
-    devuelve una única lista con todos los resultados."""
+    """Junta en una lista los resultados de todas las tandas."""
     resultados = []
     for lista in historial:
         for resultado in lista:
@@ -17,9 +16,7 @@ def obtener_resultados(historial):
 
 
 def guardar_resultados(historial, tiempos, ruta):
-    """Escribe en un único JSON la configuración, el resultado y el tiempo de cada ejecución.
-    El id se guarda como tanda.id (por ejemplo "2.1") para que no se repita entre tandas.
-    Devuelve cuántas ejecuciones se han guardado."""
+    """Guarda en JSON la configuración, el resultado y los tiempos de cada ejecución."""
     ejecuciones = []
     for numero_tanda, tanda in enumerate(historial, start=1):
         for r in tanda:
@@ -56,14 +53,16 @@ def guardar_resultados(historial, tiempos, ruta):
         json.dump(datos, archivo, ensure_ascii=False, indent=2)
     return len(ejecuciones)
 
-# Calcula los datos para el gráfico.
+
 def tamano_problema(configuracion):
+    """Tamaño del problema (N): número de ciudades en TSP o longitud_gen en OneMax."""
     if "ciudades" in configuracion:
         return len(configuracion["ciudades"])
     return configuracion["longitud_gen"]
 
 
 def puntos_grafico(historial):
+    """Tiempo medio hasta el óptimo por tipo de problema y tamaño N."""
     tiempos_por_tamano = {}
 
     for r in obtener_resultados(historial):
@@ -91,7 +90,7 @@ def puntos_grafico(historial):
 
 
 def dibujar_grafico(puntos, ruta):
-    #Dibuja N frente al tiempo hasta el óptimo (una línea por tipo de problema).
+    """Dibuja N frente al tiempo hasta el óptimo y lo guarda en ruta."""
     try:
         import matplotlib
         matplotlib.use("Agg")  # dibuja a un archivo, sin abrir ventanas
@@ -119,6 +118,7 @@ def dibujar_grafico(puntos, ruta):
     plt.close()
     return dibujado
 
+
 def preguntar_si_no(pregunta):
     """Repite la pregunta hasta que el usuario responda Si o No."""
     while True:
@@ -131,6 +131,7 @@ def preguntar_si_no(pregunta):
 
 
 def exportar_resultados(cleaned_data):
+    """Opción 5: exporta el historial a JSON y, si se pide, dibuja el gráfico."""
     historial = cleaned_data.get("historial", [])
     if not historial:
         print("No hay resultados todavía: ejecuta primero con la opción 3.")
