@@ -6,7 +6,7 @@ from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paral
 from ejecucion import formatear_tiempo
 from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos, 
                     conocer_tiempo_real_ejecucion, mostrar_ejecuciones_cargadas, mostrar_historial)
-from exportar import exportar_resultados
+from exportar import exportar_resultados, preguntar_si_no
 
 ### MENÚS ###
 
@@ -86,19 +86,25 @@ def mostrar_menu_cargar_json(cleaned_data):
     cleaned_data["num_nucleos"] = num_nucleos
     cleaned_data["historial"] = []
     cleaned_data["tiempos_tanda"] = []
+    cleaned_data["pendientes"] = len(ejecuciones)
 
     n_onemax = sum(1 for e in ejecuciones if e["tipo"] == "onemax")
     n_tsp = len(ejecuciones) - n_onemax
     print(f"Cargadas {len(ejecuciones)} ejecuciones ({n_onemax} OneMax, {n_tsp} TSP). Núcleos: {num_nucleos}.")
 
 def mostrar_menu_ejecutar(cleaned_data):
-    """Opción 3: resuelve en paralelo todas las ejecuciones cargadas y guarda sus
-    resultados como una tanda nueva del historial, junto con su tiempo real."""
+    """Opción 3: resuelve en paralelo las ejecuciones pendientes del archivo cargado y
+    guarda sus resultados como una tanda nueva del historial, junto con su tiempo real.
+    Si ya están todas hechas, pregunta si volver a ejecutarlas."""
     ejecuciones = cleaned_data.get("ejecuciones", [])
     if not ejecuciones:
         print("No hay ejecuciones cargadas: usa la opción 1 para cargar un archivo de problemas.")
         return
-
+    if cleaned_data.get("pendientes", 0) == 0:
+        print("Todas las ejecuciones cargadas ya están hechas.")
+        if not preguntar_si_no("¿Volver a ejecutarlas en una tanda nueva?"):
+            return
+        
     print(f"Ejecutando {len(ejecuciones)} ejecuciones con {cleaned_data['num_nucleos']} núcleo(s)...")
     inicio = time.perf_counter()
     resultados = ejecutar_en_paralelo(cleaned_data)
@@ -106,6 +112,7 @@ def mostrar_menu_ejecutar(cleaned_data):
 
     cleaned_data["historial"].append(resultados)
     cleaned_data["tiempos_tanda"].append(segundos)
+    cleaned_data["pendientes"] = 0
 
     errores = sum(1 for r in resultados if "error" in r)
     print(f"Tanda {len(cleaned_data['historial'])} terminada en {formatear_tiempo(segundos)}: "
@@ -129,8 +136,9 @@ def mostrar_menu_consultar_estado(cleaned_data):
     print("========== ESTADO DE LA SESIÓN ==========")
     print(f"Archivo cargado:      {cleaned_data.get('archivo', '-')}")
     print(f"Núcleos en uso:       {cleaned_data.get('num_nucleos', 1)} (disponibles: {nucleos_disponibles()})")
-    print(f"Ejecuciones cargadas: {total} ({n_onemax} OneMax, {n_tsp} TSP)")
-    print(f"Ejecuciones hechas:   {hechas} en {len(historial)} tanda(s): "
+    print(f"Ejecuciones cargadas: {total} ({n_onemax} OneMax, {n_tsp} TSP), "
+          f"pendientes: {cleaned_data.get('pendientes', 0)}")
+    print(f"Resultados guardados: {hechas} en {len(historial)} tanda(s): "
           f"{resueltos} correctas, {hechas - resueltos} con error")
     print(f"Tiempo real total:    {formatear_tiempo(tiempo_real)}")
 
