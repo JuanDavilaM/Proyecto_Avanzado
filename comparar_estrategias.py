@@ -82,6 +82,7 @@ def dibujar_convergencia(resultados, num_ciudades, ruta):
 
 
 def main():
+    """Lee el número de ciudades de la terminal, compara las dos estrategias y dibuja la convergencia."""
     num_ciudades = 100
     if len(sys.argv) > 1:
         try:

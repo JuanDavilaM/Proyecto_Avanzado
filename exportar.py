@@ -1,4 +1,4 @@
-#Opción 5 de menu:exportar los resultados a un json y el gráfico de rendimiento.
+"""Opción 5 del menú: exportar los resultados a un JSON y dibujar el gráfico de rendimiento."""
 
 import json
 import os
@@ -56,16 +56,18 @@ def guardar_resultados(historial, tiempos, ruta):
         json.dump(datos, archivo, ensure_ascii=False, indent=2)
     return len(ejecuciones)
 
-# Calcula los datos para el gráfico.
-
 
 def tamano_problema(configuracion):
+    """Tamaño del problema (N): número de ciudades en TSP o longitud_gen en OneMax."""
     if "ciudades" in configuracion:
         return len(configuracion["ciudades"])
     return configuracion["longitud_gen"]
 
 
 def puntos_grafico(historial):
+    """Puntos del gráfico de rendimiento: para cada tipo de problema, el tiempo medio
+    hasta el óptimo en cada tamaño N. Solo cuentan las ejecuciones sin error que
+    alcanzaron su optimo_conocido."""
     tiempos_por_tamano = {}
 
     for r in obtener_resultados(historial):
@@ -93,7 +95,8 @@ def puntos_grafico(historial):
 
 
 def dibujar_grafico(puntos, ruta):
-    #Dibuja N frente al tiempo hasta el óptimo (una línea por tipo de problema).
+    """Dibuja N frente al tiempo hasta el óptimo (una línea por tipo de problema)
+    y guarda la imagen en ruta. Si matplotlib no está instalado, avisa y no dibuja."""
     try:
         import matplotlib
         matplotlib.use("Agg")  # dibuja a un archivo, sin abrir ventanas
@@ -134,6 +137,8 @@ def preguntar_si_no(pregunta):
 
 
 def exportar_resultados(cleaned_data):
+    """Opción 5: guarda el historial en el archivo de salida del JSON (si no lo hay,
+    pregunta si usar resultados.json) y, si se pide, dibuja el gráfico de rendimiento."""
     historial = cleaned_data.get("historial", [])
     if not historial:
         print("No hay resultados todavía: ejecuta primero con la opción 3.")

@@ -7,6 +7,7 @@ import problemas
 
 
 def probar_onemax():
+    """OneMax de 20 bits: debe alcanzar el óptimo (20 unos)."""
     resultado = ga_engine.run_genetic_algorithm(
         20, 20, 100, 0.05,
         problemas.generar_bitstring, problemas.fitness_onemax,
@@ -17,8 +18,7 @@ def probar_onemax():
 
 
 def probar_tsp_circulo():
-    # 10 ciudades en un círculo de radio 100: la mejor ruta es recorrer el polígono,
-    # cuyo perímetro se calcula con la fórmula 2 * n * r * sen(pi / n).
+    """TSP de 10 ciudades en un círculo, cuyo óptimo se conoce por fórmula."""
     n, radio = 10, 100
     ciudades = [[radio * math.cos(2 * math.pi * k / n), radio * math.sin(2 * math.pi * k / n)]
                 for k in range(n)]
@@ -37,8 +37,7 @@ def probar_tsp_circulo():
 
 
 def probar_dos_opt():
-    # En el círculo, cualquier ruta sin cruces es la óptima, así que 2-opt
-    # debe llegar siempre al óptimo partiendo de rutas aleatorias.
+    """2-opt desde rutas aleatorias en el círculo: debe llegar siempre al óptimo."""
     n, radio = 10, 100
     ciudades = [[radio * math.cos(2 * math.pi * k / n), radio * math.sin(2 * math.pi * k / n)]
                 for k in range(n)]

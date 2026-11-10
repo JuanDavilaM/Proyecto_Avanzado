@@ -1,3 +1,5 @@
+"""Punto de entrada del programa: menú de la línea de comandos y estado de la sesión."""
+
 import json
 import time
 
@@ -8,11 +10,9 @@ from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problema
                     conocer_tiempo_real_ejecucion, mostrar_ejecuciones_cargadas, mostrar_historial)
 from exportar import exportar_resultados, preguntar_si_no
 
-### MENÚS ###
-
 
 def mostrar_menu_inicio():
-
+    """Muestra el menú principal y devuelve las opciones válidas."""
     valid_options = [1, 2, 3, 4, 5, 6]
     last_menu = "inicio"
 
