@@ -42,20 +42,20 @@ def _texto(valor):
         return f"{valor:.2f}"
     return str(valor)
 
+
 def df_ejecuciones_cargadas(ejecuciones):
     """DataFrame con los parámetros de cada ejecución cargada."""
-
-    COLUMNAS_CARGADAS = ["id", "tipo", "N", "población", "generaciones", "mutación", "óptimo"]
-
+    columnas = ["id", "tipo", "N", "población", "generaciones", "mutación", "óptimo"]
     filas = []
     for e in ejecuciones:
         filas.append([_texto(e.get("id")), _texto(e.get("tipo")), _texto(_tamano(e)),
                       _texto(e.get("tamano_poblacion")), _texto(e.get("num_generaciones")),
                       _texto(e.get("tasa_mutacion")), _texto(e.get("optimo_conocido"))])
-    return pd.DataFrame(filas, columns=COLUMNAS_CARGADAS)
+    return pd.DataFrame(filas, columns=columnas)
 
 
 def mostrar_ejecuciones_cargadas(ejecuciones):
+    """Imprime la tabla de ejecuciones cargadas, o un aviso si no hay ninguna."""
     if not ejecuciones:
         print("  (no hay ejecuciones cargadas)")
         return
@@ -63,29 +63,45 @@ def mostrar_ejecuciones_cargadas(ejecuciones):
 
 
 def df_historial(historial):
-
-    COLUMNAS_HISTORIAL = ["tanda", "id", "tipo", "N", "mejor valor", "gen. óptimo",
-                      "hasta óptimo", "tiempo total", "mejor individuo (TSP)"]
-    
-    """DataFrame con una fila por ejecución hecha, en el orden de las tandas."""
+    """DataFrame con una fila por ejecución hecha, en el orden de las tandas.
+    Las ejecuciones que fallaron muestran ERROR; el motivo se imprime aparte."""
+    columnas = ["tanda", "id", "tipo", "N", "mejor valor", "gen. óptimo",
+                "hasta óptimo", "tiempo total", "mejor individuo (TSP)"]
     filas = []
     for numero_tanda, tanda in enumerate(historial, start=1):
         for r in tanda:
             fila = [numero_tanda, f"{numero_tanda}.{_texto(r.get('id'))}", _texto(r.get("tipo")),
                     _texto(_tamano(r.get("configuracion", {})))]
             if "error" in r:
-                fila += ["-", "-", "-", "-", f"ERROR: {r['error']}"]
+                fila += ["ERROR", "-", "-", "-", "-"]
             else:
                 individuo = r.get("mejor_individuo") if r.get("tipo") == "tsp" else None
                 fila += [_texto(r.get("mejor_valor")), _texto(r.get("generacion_optimo")),
                          _texto(r.get("tiempo_hasta_optimo")), _texto(r.get("tiempo_total")),
                          _texto(individuo)]
             filas.append(fila)
-    return pd.DataFrame(filas, columns=COLUMNAS_HISTORIAL)
+    return pd.DataFrame(filas, columns=columnas)
+
+
+def errores_historial(historial):
+    """Textos "tanda.id: motivo" de las ejecuciones que terminaron con error."""
+    errores = []
+    for numero_tanda, tanda in enumerate(historial, start=1):
+        for r in tanda:
+            if "error" in r:
+                errores.append(f"{numero_tanda}.{_texto(r.get('id'))}: {r['error']}")
+    return errores
 
 
 def mostrar_historial(historial):
+    """Imprime la tabla del historial y, debajo, el motivo completo de cada error."""
     if not historial:
         print("  (todavía no se ha ejecutado nada: usa la opción 3)")
         return
     print(df_historial(historial).to_string(index=False, max_colwidth=40))
+    errores = errores_historial(historial)
+    if errores:
+        print()
+        print("Errores:")
+        for linea in errores:
+            print(f"  {linea}")
