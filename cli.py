@@ -14,7 +14,6 @@ from exportar import exportar_resultados, preguntar_si_no
 def mostrar_menu_inicio():
     """Muestra el menú principal y devuelve las opciones válidas."""
     valid_options = [1, 2, 3, 4, 5, 6]
-    last_menu = "inicio"
 
     print()
 
@@ -28,7 +27,7 @@ def mostrar_menu_inicio():
     print("6. Salir del programa (Pulsar 6)")
     print()
 
-    return valid_options, last_menu
+    return valid_options
 
 
 def mostrar_menu_parametros_ejecucion(cleaned_data):
@@ -81,7 +80,8 @@ def mostrar_menu_cargar_json(cleaned_data):
     num_nucleos = validar_num_nucleos(num_nucleos_json)
     if num_nucleos is None:
         num_nucleos = nucleos_disponibles()
-        print(f"Aviso: num_nucleos = {num_nucleos_json} no es válido en esta máquina; se usarán {num_nucleos}.")
+        print(f"Aviso: num_nucleos = {num_nucleos_json!r} no es válido "
+              f"(debe ser un entero entre 1 y {num_nucleos}); se usarán {num_nucleos}.")
 
     cleaned_data["archivo"] = ruta
     cleaned_data["ejecuciones"] = ejecuciones
@@ -156,22 +156,21 @@ def mostrar_menu_consultar_estado(cleaned_data):
     mostrar_historial(historial)
 
 
-def user_request(valid_options, last_menu, cleaned_data):
-    """Lee una opción del menú y la ejecuta.
-    Devuelve (False, None) solo cuando el usuario quiere salir; en cualquier otro caso (True, None)."""
+def user_request(valid_options, cleaned_data):
+    """Lee una opción y la ejecuta. Devuelve False solo si el usuario sale."""
     try:
         comando = int(input("Introduce un comando válido: "))
     except ValueError:
         print("Comando no válido: escribe un número del 1 al 6.")
-        return True, None
+        return True
 
     if comando not in valid_options:
         print("Comando no válido: escribe un número del 1 al 6.")
-        return True, None
+        return True
 
     if comando == 6:
         print("Programa Finalizado")
-        return False, None
+        return False
 
     try:
         if comando == 1:
@@ -186,18 +185,18 @@ def user_request(valid_options, last_menu, cleaned_data):
             exportar_resultados(cleaned_data)
     except Exception as error:
         print(f"Error inesperado en la opción {comando} ({type(error).__name__}: {error}). Volviendo al menú.")
-    return True, None
+    return True
 
 
 def main():
     """Bucle principal del programa: muestra el menú hasta que el usuario sale."""
-    evaluator = True
+    seguir = True
     cleaned_data = {}
 
     try:
-        while evaluator:
-            valid_options, last_menu = mostrar_menu_inicio()
-            evaluator, data = user_request(valid_options, last_menu, cleaned_data)
+        while seguir:
+            valid_options = mostrar_menu_inicio()
+            seguir = user_request(valid_options, cleaned_data)
     except (KeyboardInterrupt, EOFError):
         print("\nPrograma interrumpido por el usuario.")
 
