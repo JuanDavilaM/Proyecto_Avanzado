@@ -84,10 +84,8 @@ def mostrar_menu_cargar_json(cleaned_data):
     cleaned_data["ejecuciones"] = ejecuciones
     cleaned_data["salida"] = salida
     cleaned_data["num_nucleos"] = num_nucleos
-    if "historial" not in cleaned_data:
-        cleaned_data["historial"] = []
-    if "tiempos_tanda" not in cleaned_data:
-        cleaned_data["tiempos_tanda"] = []
+    cleaned_data["historial"] = []
+    cleaned_data["tiempos_tanda"] = []
 
     n_onemax = sum(1 for e in ejecuciones if e["tipo"] == "onemax")
     n_tsp = len(ejecuciones) - n_onemax
