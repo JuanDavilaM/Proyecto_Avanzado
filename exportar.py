@@ -57,6 +57,8 @@ def guardar_resultados(historial, tiempos, ruta):
     return len(ejecuciones)
 
 # Calcula los datos para el gráfico.
+
+
 def tamano_problema(configuracion):
     if "ciudades" in configuracion:
         return len(configuracion["ciudades"])
@@ -118,6 +120,7 @@ def dibujar_grafico(puntos, ruta):
         plt.savefig(ruta)
     plt.close()
     return dibujado
+
 
 def preguntar_si_no(pregunta):
     """Repite la pregunta hasta que el usuario responda Si o No."""

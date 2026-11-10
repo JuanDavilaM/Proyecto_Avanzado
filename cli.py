@@ -4,19 +4,20 @@ import time
 from io_json import read_json, construir_ejecuciones, leer_metadatos_nucleos_y_salida
 from paralelo import nucleos_disponibles, validar_num_nucleos, ejecutar_en_paralelo
 from ejecucion import formatear_tiempo
-from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos, 
+from estado import (conocer_cuantos_problemas_cargados, conocer_cuantos_problemas_resueltos,
                     conocer_tiempo_real_ejecucion, mostrar_ejecuciones_cargadas, mostrar_historial)
 from exportar import exportar_resultados, preguntar_si_no
 
 ### MENÚS ###
 
+
 def mostrar_menu_inicio():
 
-    valid_options = [1,2,3,4,5,6]
+    valid_options = [1, 2, 3, 4, 5, 6]
     last_menu = "inicio"
-    
+
     print()
-    
+
     print("Menú: ")
     print()
     print("1. Cargar Archivo de problemas (Pulsar 1)")
@@ -28,6 +29,7 @@ def mostrar_menu_inicio():
     print()
 
     return valid_options, last_menu
+
 
 def mostrar_menu_parametros_ejecucion(cleaned_data):
     """Permite sobrescribir el número de núcleos de la sesión sin editar el JSON."""
@@ -48,6 +50,7 @@ def mostrar_menu_parametros_ejecucion(cleaned_data):
     else:
         cleaned_data["num_nucleos"] = nuevo
         print(f"Se usarán {nuevo} núcleos.")
+
 
 def mostrar_menu_cargar_json(cleaned_data):
     """Carga un JSON, lo expande en ejecuciones y reinicia el estado de la sesión.
@@ -92,6 +95,7 @@ def mostrar_menu_cargar_json(cleaned_data):
     n_tsp = len(ejecuciones) - n_onemax
     print(f"Cargadas {len(ejecuciones)} ejecuciones ({n_onemax} OneMax, {n_tsp} TSP). Núcleos: {num_nucleos}.")
 
+
 def mostrar_menu_ejecutar(cleaned_data):
     """Opción 3: resuelve en paralelo las ejecuciones pendientes del archivo cargado y
     guarda sus resultados como una tanda nueva del historial, junto con su tiempo real.
@@ -104,7 +108,7 @@ def mostrar_menu_ejecutar(cleaned_data):
         print("Todas las ejecuciones cargadas ya están hechas.")
         if not preguntar_si_no("¿Volver a ejecutarlas en una tanda nueva?"):
             return
-        
+
     print(f"Ejecutando {len(ejecuciones)} ejecuciones con {cleaned_data['num_nucleos']} núcleo(s)...")
     inicio = time.perf_counter()
     resultados = ejecutar_en_paralelo(cleaned_data)
@@ -117,6 +121,7 @@ def mostrar_menu_ejecutar(cleaned_data):
     errores = sum(1 for r in resultados if "error" in r)
     print(f"Tanda {len(cleaned_data['historial'])} terminada en {formatear_tiempo(segundos)}: "
           f"{len(resultados) - errores} correctas, {errores} con error. Detalles en la opción 4.")
+
 
 def mostrar_menu_consultar_estado(cleaned_data):
     """Opción 4: muestra todo lo que mantiene el programa (§9): archivo, núcleos,
@@ -150,6 +155,7 @@ def mostrar_menu_consultar_estado(cleaned_data):
     print("--- Historial de resultados ---")
     mostrar_historial(historial)
 
+
 def user_request(valid_options, last_menu, cleaned_data):
     """Lee una opción del menú y la ejecuta.
     Devuelve (False, None) solo cuando el usuario quiere salir; en cualquier otro caso (True, None)."""
@@ -182,6 +188,7 @@ def user_request(valid_options, last_menu, cleaned_data):
         print(f"Error inesperado en la opción {comando} ({type(error).__name__}: {error}). Volviendo al menú.")
     return True, None
 
+
 def main():
     """Bucle principal del programa: muestra el menú hasta que el usuario sale."""
     evaluator = True
@@ -193,6 +200,7 @@ def main():
             evaluator, data = user_request(valid_options, last_menu, cleaned_data)
     except (KeyboardInterrupt, EOFError):
         print("\nPrograma interrumpido por el usuario.")
+
 
 if __name__ == "__main__":
     main()

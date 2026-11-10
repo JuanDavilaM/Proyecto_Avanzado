@@ -118,7 +118,6 @@ def preparar_problema(ejecucion):
     # TSP: la matriz se calcula una sola vez, antes de ejecutar el algoritmo.
     matriz = problemas.matriz_distancias(ejecucion["ciudades"])
 
-
     if estrategia_de(ejecucion) == "memetico":
         parametros["busqueda_local"] = problemas.dos_opt
         parametros["num_busqueda_local"] = ejecucion.get("num_busqueda_local", 3)

@@ -20,6 +20,7 @@ def generar_permutacion(tamano):
 
 # ---------- TSP: distancias ----------
 
+
 def matriz_distancias(ciudades):
     """Matriz n x n con la distancia euclídea entre cada par de ciudades.
     Se calcula una sola vez al preparar el problema, antes de ejecutar el algoritmo."""
@@ -54,6 +55,7 @@ def fitness_tsp(individuo, matriz):
 
 # ---------- Cruces (devuelven dos hijos nuevos) ----------
 
+
 def cruce_un_punto(padre1, padre2):
     """OneMax: se corta en un punto aleatorio y se intercambian las colas."""
     n = len(padre1)
@@ -80,6 +82,7 @@ def _hijo_ox(fijo, relleno, a, b):
     return resto[:a] + tramo + resto[a:]
 
 # ---------- Mutaciones (devuelven un individuo nuevo, sin modificar el original) ----------
+
 
 def mutacion_bitflip(individuo, tasa):
     """OneMax: cada gen se invierte (0↔1) con probabilidad 'tasa'."""

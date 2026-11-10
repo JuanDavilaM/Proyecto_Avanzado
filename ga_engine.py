@@ -10,11 +10,13 @@ def generar_poblacion(tamano_poblacion, generador, tamano_individuo):
     """Crea la población inicial llamando al generador recibido."""
     return [generador(tamano_individuo) for _ in range(tamano_poblacion)]
 
+
 def evaluar_poblacion(poblacion, fitness, *args):
     """Calcula la fitness de cada individuo.
     *args son los datos extra del problema (para TSP, la matriz de distancias)
     y se reenvían tal cual a la función de fitness."""
     return [fitness(individuo, *args) for individuo in poblacion]
+
 
 def seleccion_torneo(poblacion, fitnesses, tamano_torneo=2):
     """Elige tantos padres como individuos tiene la población.
@@ -27,6 +29,7 @@ def seleccion_torneo(poblacion, fitnesses, tamano_torneo=2):
         ganador = max(participantes, key=lambda i: fitnesses[i])
         padres.append(poblacion[ganador])
     return padres
+
 
 def seleccionar_elites(poblacion, fitnesses, num_elites):
     """Copias de los 'num_elites' mejores individuos, que pasan intactos
@@ -42,8 +45,9 @@ def optimo_alcanzado(fitness, fitness_objetivo, tolerancia=1e-4):
         return False
     return fitness >= fitness_objetivo - tolerancia * abs(fitness_objetivo)
 
+
 def run_genetic_algorithm(tamano_poblacion, tamano_individuo, num_generaciones, tasa_mutacion,
-                          generador, fitness, cruce, mutacion, *args, 
+                          generador, fitness, cruce, mutacion, *args,
                           fitness_objetivo=None, semilla=None, tamano_torneo=2, num_elites=1,
                           busqueda_local=None, num_busqueda_local=0, parar_en_optimo=True):
     """Ejecuta el algoritmo genético y devuelve un diccionario con los resultados.

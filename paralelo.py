@@ -22,6 +22,7 @@ def validar_num_nucleos(valor):
         return n
     return None
 
+
 def ejecutar_en_paralelo(cleaned_data):
     """Lanza las ejecuciones cargadas repartidas entre varios procesos."""
 

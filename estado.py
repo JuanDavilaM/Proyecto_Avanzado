@@ -3,6 +3,7 @@ con las ejecuciones cargadas y el historial de resultados."""
 
 import pandas as pd
 
+
 def conocer_cuantos_problemas_cargados(cleaned_data):
     """Número de ejecuciones cargadas: total, OneMax y TSP."""
     ejecuciones = cleaned_data.get("ejecuciones", [])
