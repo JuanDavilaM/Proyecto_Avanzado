@@ -5,12 +5,13 @@ import problemas
 
 
 def formatear_tiempo(segundos):
-    """Convierte segundos en texto con horas, minutos y segundos (p. ej. '0h 1m 5.25s')."""
-    segundos = round(segundos, 2)
+    """Convierte segundos en texto con horas, minutos y segundos con milisegundos
+    (p. ej. '0h 1m 5.250s')."""
+    segundos = round(segundos, 3)
     horas = int(segundos // 3600)
     minutos = int((segundos % 3600) // 60)
     resto = segundos - horas * 3600 - minutos * 60
-    return f"{horas}h {minutos}m {resto:.2f}s"
+    return f"{horas}h {minutos}m {resto:.3f}s"
 
 
 def _es_entero(valor):
