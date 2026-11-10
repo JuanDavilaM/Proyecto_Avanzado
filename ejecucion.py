@@ -23,6 +23,13 @@ def _es_numero(valor):
     return isinstance(valor, (int, float)) and not isinstance(valor, bool)
 
 
+def estrategia_de(ejecucion):
+    """Estrategia del algoritmo elegida en el JSON ("basico" o "memetico").
+    Si no se indica: memética en TSP (la que mejores rutas da) y básica en OneMax."""
+    por_defecto = "memetico" if ejecucion.get("tipo") == "tsp" else "basico"
+    return str(ejecucion.get("estrategia", por_defecto)).lower()
+
+
 def comprobar_ejecucion(ejecucion):
     """Comprueba claves, tipos y rangos de una ejecución antes de resolverla.
     Si algo no es correcto, lanza ValueError con un mensaje que dice qué falla."""
@@ -64,6 +71,19 @@ def comprobar_ejecucion(ejecucion):
     if optimo is not None and not _es_numero(optimo):
         raise ValueError(f"optimo_conocido debe ser un número (recibido: {optimo!r})")
 
+    # Parámetros opcionales del algoritmo (funcionalidad original)
+    estrategia = estrategia_de(ejecucion)
+    if estrategia not in ("basico", "memetico"):
+        raise ValueError(f'estrategia debe ser "basico" o "memetico" (recibido: {ejecucion["estrategia"]!r})')
+    if estrategia == "memetico" and tipo != "tsp":
+        raise ValueError('la estrategia "memetico" (búsqueda local 2-opt) solo está disponible para TSP')
+    for clave, minimo in (("num_elites", 0), ("tamano_torneo", 1), ("num_busqueda_local", 0)):
+        if clave in ejecucion and (not _es_entero(ejecucion[clave]) or ejecucion[clave] < minimo):
+            raise ValueError(f"{clave} debe ser un entero mayor o igual que {minimo} "
+                             f"(recibido: {ejecucion[clave]!r})")
+    if "semilla" in ejecucion and not _es_entero(ejecucion["semilla"]):
+        raise ValueError(f"semilla debe ser un entero (recibido: {ejecucion['semilla']!r})")
+
 
 def preparar_problema(ejecucion):
     """Valida la ejecución y elige las funciones del problema según su tipo.
@@ -72,6 +92,15 @@ def preparar_problema(ejecucion):
 
     comprobar_ejecucion(ejecucion)
     optimo = ejecucion.get("optimo_conocido")
+
+    # Parámetros del algoritmo: los del JSON o, si no vienen, los valores por defecto
+    parametros = {
+        "num_elites": ejecucion.get("num_elites", 1),
+        "tamano_torneo": ejecucion.get("tamano_torneo", 2),
+        "semilla": ejecucion.get("semilla", ejecucion.get("id")),
+        "busqueda_local": None,
+        "num_busqueda_local": 0,
+    }
 
     if ejecucion["tipo"] == "onemax":
         return {
@@ -82,10 +111,16 @@ def preparar_problema(ejecucion):
             "mutacion": problemas.mutacion_bitflip,
             "datos_extra": (),
             "fitness_objetivo": optimo,
+            "parametros": parametros,
         }
 
     # TSP: la matriz se calcula una sola vez, antes de ejecutar el algoritmo.
     matriz = problemas.matriz_distancias(ejecucion["ciudades"])
+
+
+    if estrategia_de(ejecucion) == "memetico":
+        parametros["busqueda_local"] = problemas.dos_opt
+        parametros["num_busqueda_local"] = ejecucion.get("num_busqueda_local", 3)
 
     if optimo is None:
         objetivo = None
@@ -100,6 +135,7 @@ def preparar_problema(ejecucion):
         "mutacion": problemas.mutacion_intercambio,
         "datos_extra": (matriz,),
         "fitness_objetivo": objetivo,
+        "parametros": parametros,
     }
 
 
@@ -118,7 +154,7 @@ def ejecutar_una(ejecucion):
             p["generador"], p["fitness"], p["cruce"], p["mutacion"],
             *p["datos_extra"],
             fitness_objetivo=p["fitness_objetivo"],
-            semilla=identificador)
+            **p["parametros"])
     except Exception as error:
         return {
             "id": identificador,
@@ -146,6 +182,7 @@ def ejecutar_una(ejecucion):
     return {
         "id": identificador,
         "tipo": ejecucion["tipo"],
+        "estrategia": estrategia_de(ejecucion),
         "configuracion": ejecucion,
         "mejor_valor": signo * bruto["mejor_fitness"],
         "mejor_individuo": bruto["mejor_individuo"],

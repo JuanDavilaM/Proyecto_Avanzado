@@ -93,3 +93,30 @@ def mutacion_intercambio(individuo, tasa):
         i, j = random.sample(range(len(mutado)), 2)
         mutado[i], mutado[j] = mutado[j], mutado[i]
     return mutado
+
+
+# ---------- Búsqueda local para TSP (algoritmo memético) ----------
+
+def dos_opt(ruta, matriz):
+    """Mejora una ruta con 2-opt: mientras dos tramos se puedan "descruzar"
+    acortando el recorrido, invierte el trozo de ruta que hay entre ellos.
+    Termina cuando ningún cambio de ese tipo mejora la ruta (óptimo local).
+    Devuelve una ruta nueva; no modifica la original."""
+    ruta = ruta[:]
+    n = len(ruta)
+    if n < 4:
+        return ruta  # con menos de 4 ciudades no hay dos tramos que se puedan cruzar
+
+    mejora = True
+    while mejora:
+        mejora = False
+        for i in range(n - 1):
+            a, b = ruta[i], ruta[i + 1]                # tramo 1: a -> b
+            for j in range(i + 2, n if i > 0 else n - 1):
+                c, d = ruta[j], ruta[(j + 1) % n]      # tramo 2: c -> d
+                # ¿Es más corto unir a-c y b-d que a-b y c-d?
+                if matriz[a][c] + matriz[b][d] < matriz[a][b] + matriz[c][d] - 1e-9:
+                    ruta[i + 1:j + 1] = reversed(ruta[i + 1:j + 1])
+                    b = ruta[i + 1]
+                    mejora = True
+    return ruta

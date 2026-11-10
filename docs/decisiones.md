@@ -49,3 +49,56 @@ El JSON guarda la configuración, el resultado y los tiempos de cada ejecución,
 ## 12. Validación de tipos
 - **Decisión:** cada ejecución se valida antes de resolverla (tipos y rangos). `true`/`false` no se aceptan como números aunque en Python `bool` sea subclase de `int`.
 - **Motivo:** el programa no debe fallar ante un JSON incorrecto, y el mensaje debe decir qué valor hay que corregir. Una ejecución inválida queda registrada con su error y no impide que se resuelvan las demás.
+
+## 13. Elitismo
+- **Decisión:** 1 élite por defecto (`num_elites`, configurable desde el JSON).
+- **Motivo:** sin elitismo el mejor individuo se puede perder entre generaciones. No lo pide el enunciado; con `num_elites: 0` el motor se comporta como el del laboratorio.
+
+## 14. Comparación con el óptimo conocido
+- **Decisión:** se considera alcanzado con una tolerancia relativa de 1e-4.
+- **Motivo:** las distancias son decimales y el JSON puede dar el óptimo redondeado.
+
+## 15. Fitness del TSP
+- **Decisión:** la distancia con signo negativo (no 1/distancia como en el laboratorio).
+- **Motivo:** evita dividir por cero y permite recuperar la distancia exacta.
+
+## 16. Matriz de distancias
+- **Decisión:** se calcula una vez desde las coordenadas y no se redondea.
+- **Motivo:** redondear cada tramo acumula error al sumar la ruta.
+
+## 17. Significado de la tasa de mutación
+- **Decisión:** probabilidad por gen en OneMax y por individuo en TSP.
+- **Motivo:** en TSP un intercambio ya cambia dos ciudades; aplicarlo por gen destrozaría las rutas.
+
+## 18. Semilla
+- **Decisión:** por defecto, el id de la ejecución, fijada dentro de cada ejecución (configurable con `semilla`).
+- **Motivo:** con multiprocessing en Windows cada proceso reimporta los módulos; una semilla global daría resultados idénticos. Es reproducible en la misma versión de Python.
+- **Varias semillas:** `semilla` admite una lista y se expande como la rejilla, para lanzar el mismo problema con varias semillas en paralelo y quedarse con el mejor resultado (extensión propia de la §4.2).
+
+## 19. Funcionalidad original: a qué individuos se aplica 2-opt
+- **Decisión:** a 3 hijos elegidos al azar en cada generación (`num_busqueda_local`).
+- **Motivo:** aplicado a los mejores, la búsqueda se estancaba (misma distancia en la generación 50 y en la 200). Con 3 se obtiene casi toda la mejora sin perder diversidad.
+
+## 20. Estrategia por defecto en TSP
+- **Decisión:** memética, salvo que el JSON indique `"estrategia": "basico"`.
+- **Motivo:** no está claro si en el hackathon se podrán añadir claves al JSON; así se usa la mejor estrategia sin tocar nada. En un TSP de 100 ciudades reduce la distancia un 59 % con las mismas generaciones.
+
+## 21. Historial por tandas
+- **Decisión:** el historial es una lista de tandas, una por cada pulsación de la opción 3.
+- **Motivo:** permite ejecutar varias veces el mismo archivo y saber de qué tanda es cada resultado.
+
+## 22. Ids compuestos en el estado y en la exportación
+- **Decisión:** cada resultado se identifica como `tanda.id` (por ejemplo, `2.3`).
+- **Motivo:** el id de una ejecución se repite si se ejecuta varias veces; con la tanda delante, cada resultado es único.
+
+## 23. Óptimo de OneMax por defecto
+- **Decisión:** si un problema OneMax no trae `optimo_conocido`, se usa `longitud_gen`.
+- **Motivo:** el óptimo de OneMax es, por definición, la cadena de todo unos; así siempre se mide el tiempo hasta el óptimo y el gráfico de rendimiento tiene datos.
+
+## 24. Parar al alcanzar el óptimo
+- **Decisión:** el algoritmo termina en cuanto alcanza `optimo_conocido` (`parar_en_optimo=True`).
+- **Motivo:** una vez alcanzado el óptimo, seguir no puede mejorar el resultado y solo gasta tiempo.
+
+## 25. Exportar sin salida declarada
+- **Decisión:** si el archivo cargado no trae `salida.guardar_en`, la opción 5 pregunta si exportar en `resultados.json`.
+- **Motivo:** el usuario puede guardar sus resultados aunque el JSON no lo indique, sin tener que editarlo.
