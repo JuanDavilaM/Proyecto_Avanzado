@@ -1,5 +1,4 @@
-"""Definición de los problemas concretos (OneMax y TSP):
-cómo se crea un individuo, cómo se evalúa, cómo se cruza y cómo se muta."""
+"""Funciones de OneMax y TSP: generar, evaluar, cruzar, mutar y 2-opt."""
 
 import random
 import math
@@ -22,8 +21,7 @@ def generar_permutacion(tamano):
 
 
 def matriz_distancias(ciudades):
-    """Matriz n x n con la distancia euclídea entre cada par de ciudades.
-    Se calcula una sola vez al preparar el problema, antes de ejecutar el algoritmo."""
+    """Matriz de distancias euclídeas entre todas las ciudades."""
     n = len(ciudades)
     matriz = [[0.0] * n for _ in range(n)]
     for i in range(n):
@@ -66,9 +64,7 @@ def cruce_un_punto(padre1, padre2):
 
 
 def cruce_ox(padre1, padre2):
-    """TSP: cruce por orden (Order Crossover). Cada hijo conserva un tramo
-    aleatorio de un padre y completa el resto con las ciudades que faltan,
-    en el orden en que aparecen en el otro padre. Siempre da rutas válidas."""
+    """Cruce por orden (OX): conserva un tramo de un padre y completa con el orden del otro."""
     n = len(padre1)
     a, b = sorted(random.sample(range(n + 1), 2))
     return _hijo_ox(padre1, padre2, a, b), _hijo_ox(padre2, padre1, a, b)
@@ -101,10 +97,7 @@ def mutacion_intercambio(individuo, tasa):
 # ---------- Búsqueda local para TSP (algoritmo memético) ----------
 
 def dos_opt(ruta, matriz):
-    """Mejora una ruta con 2-opt: mientras dos tramos se puedan "descruzar"
-    acortando el recorrido, invierte el trozo de ruta que hay entre ellos.
-    Termina cuando ningún cambio de ese tipo mejora la ruta (óptimo local).
-    Devuelve una ruta nueva; no modifica la original."""
+    """Búsqueda local 2-opt: invierte tramos mientras la ruta se acorte. Devuelve una ruta nueva."""
     ruta = ruta[:]
     n = len(ruta)
     if n < 4:

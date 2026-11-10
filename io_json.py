@@ -22,9 +22,7 @@ def a_lista_de_problemas(valor, nombre):
 
 
 def separar_problemas(data):
-    """Devuelve dos listas (OneMax y TSP) con los problemas del JSON.
-    Admite el formato simple (un problema con "tipo") y el completo
-    (problemas_onemax / problemas_tsp, cada uno objeto o lista)."""
+    """Separa los problemas OneMax y TSP; admite el formato simple y el completo."""
     if "tipo" in data:
         tipo = str(data["tipo"]).lower()
         problema = {clave: valor for clave, valor in data.items() if clave != "tipo"}
@@ -40,9 +38,7 @@ def separar_problemas(data):
 
 
 def individualizar_problemas(problemas):
-    """Expande cada problema en una ejecución por combinación de hiperparámetros.
-    Solo los hiperparámetros del solucionador (§4.2) y la semilla pueden darse como lista;;
-    cualquier otra lista (ciudades, datos nuevos del problema) se conserva entera."""
+    """Crea una ejecución por cada combinación de población, generaciones, tasa y semilla."""
     claves_rejilla = ("tamano_poblacion", "num_generaciones", "tasa_mutacion", "semilla")
     resultado = []
     for problema in problemas:
@@ -84,8 +80,7 @@ def construir_ejecuciones(data):
 
 
 def leer_metadatos_nucleos_y_salida(data):
-    """Lee las claves opcionales del JSON. Si faltan: sin salida y 1 núcleo.
-    La sección de salida se acepta como "salida" (ejemplo del enunciado) o "output" (texto)."""
+    """Lee salida (u output) y num_nucleos, que son opcionales."""
     salida = data.get("salida", data.get("output"))
     num_nucleos = data.get("num_nucleos", 1)
     return salida, num_nucleos

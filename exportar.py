@@ -7,8 +7,7 @@ from ejecucion import formatear_tiempo
 
 
 def obtener_resultados(historial):
-    """El historial es una lista de vueltas (una por cada vez que se ejecuta la opción 3);
-    devuelve una única lista con todos los resultados."""
+    """Junta en una lista los resultados de todas las tandas."""
     resultados = []
     for lista in historial:
         for resultado in lista:
@@ -17,9 +16,7 @@ def obtener_resultados(historial):
 
 
 def guardar_resultados(historial, tiempos, ruta):
-    """Escribe en un único JSON la configuración, el resultado y el tiempo de cada ejecución.
-    El id se guarda como tanda.id (por ejemplo "2.1") para que no se repita entre tandas.
-    Devuelve cuántas ejecuciones se han guardado."""
+    """Guarda en JSON la configuración, el resultado y los tiempos de cada ejecución."""
     ejecuciones = []
     for numero_tanda, tanda in enumerate(historial, start=1):
         for r in tanda:
@@ -65,9 +62,7 @@ def tamano_problema(configuracion):
 
 
 def puntos_grafico(historial):
-    """Puntos del gráfico de rendimiento: para cada tipo de problema, el tiempo medio
-    hasta el óptimo en cada tamaño N. Solo cuentan las ejecuciones sin error que
-    alcanzaron su optimo_conocido."""
+    """Tiempo medio hasta el óptimo por tipo de problema y tamaño N."""
     tiempos_por_tamano = {}
 
     for r in obtener_resultados(historial):
@@ -95,8 +90,7 @@ def puntos_grafico(historial):
 
 
 def dibujar_grafico(puntos, ruta):
-    """Dibuja N frente al tiempo hasta el óptimo (una línea por tipo de problema)
-    y guarda la imagen en ruta. Si matplotlib no está instalado, avisa y no dibuja."""
+    """Dibuja N frente al tiempo hasta el óptimo y lo guarda en ruta."""
     try:
         import matplotlib
         matplotlib.use("Agg")  # dibuja a un archivo, sin abrir ventanas
@@ -137,8 +131,7 @@ def preguntar_si_no(pregunta):
 
 
 def exportar_resultados(cleaned_data):
-    """Opción 5: guarda el historial en el archivo de salida del JSON (si no lo hay,
-    pregunta si usar resultados.json) y, si se pide, dibuja el gráfico de rendimiento."""
+    """Opción 5: exporta el historial a JSON y, si se pide, dibuja el gráfico."""
     historial = cleaned_data.get("historial", [])
     if not historial:
         print("No hay resultados todavía: ejecuta primero con la opción 3.")

@@ -5,8 +5,7 @@ import problemas
 
 
 def formatear_tiempo(segundos):
-    """Convierte segundos en texto con horas, minutos y segundos con milisegundos
-    (p. ej. '0h 1m 5.250s')."""
+    """Convierte segundos en texto del tipo '0h 1m 5.250s'"""
     segundos = round(segundos, 3)
     horas = int(segundos // 3600)
     minutos = int((segundos % 3600) // 60)
@@ -25,15 +24,13 @@ def _es_numero(valor):
 
 
 def estrategia_de(ejecucion):
-    """Estrategia del algoritmo elegida en el JSON ("basico" o "memetico").
-    Si no se indica: memética en TSP (la que mejores rutas da) y básica en OneMax."""
+    """Estrategia del JSON; por defecto, memético en TSP y básico en OneMax."""
     por_defecto = "memetico" if ejecucion.get("tipo") == "tsp" else "basico"
     return str(ejecucion.get("estrategia", por_defecto)).lower()
 
 
 def comprobar_ejecucion(ejecucion):
-    """Comprueba claves, tipos y rangos de una ejecución antes de resolverla.
-    Si algo no es correcto, lanza ValueError con un mensaje que dice qué falla."""
+    """Valida claves, tipos y rangos; lanza ValueError si algo no es correcto."""
     tipo = ejecucion.get("tipo")
     if tipo not in ("onemax", "tsp"):
         raise ValueError(f'tipo de problema desconocido: "{tipo}"')
@@ -87,9 +84,7 @@ def comprobar_ejecucion(ejecucion):
 
 
 def preparar_problema(ejecucion):
-    """Valida la ejecución y elige las funciones del problema según su tipo.
-    En TSP calcula la matriz de distancias una sola vez y pasa el óptimo a escala
-    de fitness (distancia en negativo), que es lo que espera el motor."""
+    """Elige las funciones del problema y calcula la matriz si es TSP."""
 
     comprobar_ejecucion(ejecucion)
     optimo = ejecucion.get("optimo_conocido")
@@ -140,9 +135,7 @@ def preparar_problema(ejecucion):
 
 
 def ejecutar_una(ejecucion):
-    """Resuelve una ejecución y devuelve su resultado con tiempos, o el error si falla.
-    Recibe un único argumento y está definida a nivel de módulo para poder pasarla
-    a multiprocessing.Pool.map, que envía la función a otro proceso."""
+    """Resuelve una ejecución (la llama Pool.map) y devuelve su resultado o el error."""
 
     identificador = ejecucion.get("id")
 

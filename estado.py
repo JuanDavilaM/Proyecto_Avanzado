@@ -1,5 +1,4 @@
-"""Opción 4 del menú: resumen del estado de la sesión y tablas de texto
-con las ejecuciones cargadas y el historial de resultados."""
+"""Opción 4: tablas con las ejecuciones cargadas y el historial."""
 
 import pandas as pd
 
@@ -64,8 +63,7 @@ def mostrar_ejecuciones_cargadas(ejecuciones):
 
 
 def df_historial(historial):
-    """DataFrame con una fila por ejecución hecha, en el orden de las tandas.
-    Las ejecuciones que fallaron muestran ERROR; el motivo se imprime aparte."""
+    """Tabla del historial; las ejecuciones con error muestran ERROR."""
     columnas = ["tanda", "id", "tipo", "N", "mejor valor", "gen. óptimo",
                 "hasta óptimo", "tiempo total", "mejor individuo (TSP)"]
     filas = []

@@ -1,5 +1,4 @@
-"""Ejecución en paralelo de las ejecuciones del algoritmo genético
-y utilidades relacionadas con los núcleos de la máquina."""
+"""Núcleos disponibles y ejecución en paralelo con multiprocessing."""
 
 import os
 import multiprocessing

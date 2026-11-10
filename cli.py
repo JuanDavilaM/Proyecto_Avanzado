@@ -52,8 +52,7 @@ def mostrar_menu_parametros_ejecucion(cleaned_data):
 
 
 def mostrar_menu_cargar_json(cleaned_data):
-    """Carga un JSON, lo expande en ejecuciones y reinicia el estado de la sesión.
-    Si algo falla, el estado anterior se conserva intacto."""
+    """Opción 1: carga un JSON y reinicia la sesión. Si falla, no cambia nada."""
     ruta = input("Ruta del archivo JSON: ").strip().strip('"\'')
 
     try:
@@ -97,9 +96,7 @@ def mostrar_menu_cargar_json(cleaned_data):
 
 
 def mostrar_menu_ejecutar(cleaned_data):
-    """Opción 3: resuelve en paralelo las ejecuciones pendientes del archivo cargado y
-    guarda sus resultados como una tanda nueva del historial, junto con su tiempo real.
-    Si ya están todas hechas, pregunta si volver a ejecutarlas."""
+    """Opción 3: ejecuta en paralelo las ejecuciones pendientes y guarda la tanda."""
     ejecuciones = cleaned_data.get("ejecuciones", [])
     if not ejecuciones:
         print("No hay ejecuciones cargadas: usa la opción 1 para cargar un archivo de problemas.")
@@ -124,8 +121,7 @@ def mostrar_menu_ejecutar(cleaned_data):
 
 
 def mostrar_menu_consultar_estado(cleaned_data):
-    """Opción 4: muestra todo lo que mantiene el programa (§9): archivo, núcleos,
-    ejecuciones cargadas con sus parámetros e historial de resultados con sus tiempos."""
+    """Opción 4: muestra archivo, núcleos, ejecuciones cargadas e historial."""
     ejecuciones = cleaned_data.get("ejecuciones", [])
     historial = cleaned_data.get("historial", [])
     if not ejecuciones and not historial:
