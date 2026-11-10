@@ -4,7 +4,7 @@ Proyecto de la asignatura *Herramientas de Programación para la Ciencia de Dato
 
 Programa de línea de comandos que lee problemas desde un archivo JSON, los resuelve con un algoritmo genético repartiendo las ejecuciones entre varios núcleos, mide sus tiempos y exporta los resultados. Resuelve dos problemas: **OneMax** y el **problema del viajante (TSP)**.
 
-**Equipo:** Juan Pablo Dávila, Ricardo Mataix y David Martín Montalbán.
+**Equipo:** Juan Pablo Dávila Martínez, Ricardo Mataix Serrano y David Martín Montalbán.
 
 ## Instalación
 
@@ -85,6 +85,16 @@ Ejemplo rápido: `1` → `ejemplos/ejemplo_completo.json` → `3` → `4` → `5
 
 `salida` y `num_nucleos` son opcionales. Si `num_nucleos` supera los núcleos de la máquina, se usan todos y se avisa.
 
+## Ejemplos incluidos
+
+| Archivo | Para qué sirve |
+|---|---|
+| `ejemplos/ejemplo_completo.json` | El ejemplo del enunciado: 8 ejecuciones (rejilla incluida) |
+| `ejemplos/onemax_simple.json`, `ejemplos/tsp_simple.json` | Formato simple con `tipo` |
+| `ejemplos/salida_con_grafico.json` | OneMax de varios tamaños con exportación y gráfico de rendimiento |
+| `ejemplos/tsp_100_estrategias.json` | El mismo TSP de 100 ciudades con estrategia básica y memética |
+| `ejemplos/tsp_100_semillas.json` | El mismo TSP de 100 ciudades con 8 semillas en paralelo |
+
 ## Estructura del proyecto
 
 | Archivo | Responsabilidad |
@@ -119,10 +129,3 @@ python comparar_estrategias.py 60     # con otro número de ciudades
 ```
 
 O desde el menú: `1` → `ejemplos/tsp_100_estrategias.json` → `3` → `4`.
-
-## Pruebas
-
-```bash
-python prueba_motor.py        # OneMax, TSP en círculo con óptimo conocido y 2-opt
-python prueba_validacion.py   # datos correctos e incorrectos del JSON
-```
